@@ -10,13 +10,13 @@ Excel-/CSV-Export- und Archivtool für deine Moviepilot-Bewertungen.
 
 ## Downloads
 
-**Windows 11 x64 Ã‚Â· keine Python-Installation Ã‚Â· keine Administratorrechte**
+**Windows 11 x64 · keine Python-Installation · keine Administratorrechte**
 
-- [FilmKompass 1.0 fÃƒÂ¼r Windows herunterladen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Windows-portabel.zip)
-- [VollstÃƒÂ¤ndigen Python-Quellcode herunterladen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Quellcode.zip)
-- [SHA-256-PrÃƒÂ¼fsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/SHA256SUMS.txt)
+- [FilmKompass 1.0 für Windows herunterladen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Windows-portabel.zip)
+- [Vollständigen Python-Quellcode herunterladen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Quellcode.zip)
+- [SHA-256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/SHA256SUMS.txt)
 
-Die EXE ist derzeit **nicht digital signiert**. Verwende diese offizielle Bezugsquelle und prÃƒÂ¼fe SHA256SUMS.txt. Windows-Sicherheitsfunktionen mÃƒÂ¼ssen nicht pauschal deaktiviert werden.
+Die EXE ist derzeit **nicht digital signiert**. Verwende diese offizielle Bezugsquelle und prüfe SHA256SUMS.txt. Windows-Sicherheitsfunktionen müssen nicht pauschal deaktiviert werden.
 
 ## Startanleitung
 

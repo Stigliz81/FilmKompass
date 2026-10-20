@@ -12,6 +12,8 @@ TAG = "v" + APP_VERSION + ".0" if APP_VERSION.count(".") == 1 else "v" + APP_VER
 
 
 def run(args, cwd=ROOT, capture=False, env=None):
+    if os.name == "nt" and str(args[0]) == "git":
+        args = ["git", "-c", "http.sslBackend=schannel", *args[1:]]
     result = subprocess.run([str(x) for x in args], cwd=cwd, env=env,
                             capture_output=capture, text=True, encoding="utf-8")
     if result.returncode:
@@ -101,14 +103,14 @@ def publish(gh, report_path, staging):
     run(["git", "commit", "-m", "Release " + APP_TITLE], cwd=staging)
     if not existing:
         run([gh, "repo", "create", REPO, "--private", "--description",
-             "FilmKompass â€“ kostenloses Windows-Tool zum Herunterladen, Archivieren und Exportieren von Moviepilot-Bewertungen als Excel/CSV."])
+             "FilmKompass – kostenloses Windows-Tool zum Herunterladen, Archivieren und Exportieren von Moviepilot-Bewertungen als Excel/CSV."])
     run(["git", "remote", "add", "origin", "https://github.com/" + REPO + ".git"], cwd=staging)
     run([gh, "auth", "setup-git", "--hostname", "github.com"])
     run(["git", "push", "-u", "origin", "main"], cwd=staging)
     run(["git", "tag", TAG], cwd=staging)
     run(["git", "push", "origin", TAG], cwd=staging)
     notes = out / "RELEASE_NOTES.md"
-    notes.write_text("# " + APP_TITLE + "\n\nMoviepilot-Bewertungen lokal herunterladen, filtern, sichern und als Excel/CSV exportieren.\n\nWindows: ZIP vollstÃ¤ndig entpacken und FilmKompass.exe mit dem gesamten _internal-Ordner verwenden. Keine Python-Installation oder Administratorrechte erforderlich. EXE unsigniert; SHA256SUMS.txt prÃ¼fen.\n\nBewertungen mÃ¼ssen fÃ¼r den Standarddownload Ã¶ffentlich sichtbar sein. Keine automatische KI- oder CloudÃ¼bertragung. MIT-Lizenz.\n", encoding="utf-8")
+    notes.write_text("# " + APP_TITLE + "\n\nMoviepilot-Bewertungen lokal herunterladen, filtern, sichern und als Excel/CSV exportieren.\n\nWindows: ZIP vollständig entpacken und FilmKompass.exe mit dem gesamten _internal-Ordner verwenden. Keine Python-Installation oder Administratorrechte erforderlich. EXE unsigniert; SHA256SUMS.txt prüfen.\n\nBewertungen müssen für den Standarddownload öffentlich sichtbar sein. Keine automatische KI- oder Cloudübertragung. MIT-Lizenz.\n", encoding="utf-8")
     run([gh, "release", "create", TAG, *packages, "--repo", REPO, "--draft", "--title", APP_TITLE, "--notes-file", notes])
     drafts = json.loads(run([gh, "api", "repos/" + REPO + "/releases"], capture=True))
     release = next(item for item in drafts if item["tag_name"] == TAG and item["draft"])
@@ -127,11 +129,11 @@ def publish(gh, report_path, staging):
     urls = {a["name"]: a["browser_download_url"] for a in release["assets"]}
     readme = (staging / "README.md").read_text(encoding="utf-8")
     start, end = readme.index("## Downloads"), readme.index("## Startanleitung")
-    section = "## Downloads\n\n**Windows 11 x64 Â· keine Python-Installation Â· keine Administratorrechte**\n\n"
-    section += "- [FilmKompass 1.0 fÃ¼r Windows herunterladen](" + urls[packages[0].name] + ")\n"
-    section += "- [VollstÃ¤ndigen Python-Quellcode herunterladen](" + urls[packages[1].name] + ")\n"
-    section += "- [SHA-256-PrÃ¼fsummen](" + urls[packages[2].name] + ")\n\n"
-    section += "Die EXE ist derzeit **nicht digital signiert**. Verwende diese offizielle Bezugsquelle und prÃ¼fe SHA256SUMS.txt. Windows-Sicherheitsfunktionen mÃ¼ssen nicht pauschal deaktiviert werden.\n\n"
+    section = "## Downloads\n\n**Windows 11 x64 · keine Python-Installation · keine Administratorrechte**\n\n"
+    section += "- [FilmKompass 1.0 für Windows herunterladen](" + urls[packages[0].name] + ")\n"
+    section += "- [Vollständigen Python-Quellcode herunterladen](" + urls[packages[1].name] + ")\n"
+    section += "- [SHA-256-Prüfsummen](" + urls[packages[2].name] + ")\n\n"
+    section += "Die EXE ist derzeit **nicht digital signiert**. Verwende diese offizielle Bezugsquelle und prüfe SHA256SUMS.txt. Windows-Sicherheitsfunktionen müssen nicht pauschal deaktiviert werden.\n\n"
     readme = readme[:start] + section + readme[end:]
     (staging / "README.md").write_text(readme, encoding="utf-8")
     (ROOT / "README.md").write_text(readme, encoding="utf-8")
