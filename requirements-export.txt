@@ -1,0 +1,2 @@
+# Nur für die optionale Browser-Aktualisierung; Manager/CSV-Import sind unabhängig.
+playwright>=1.50,<2

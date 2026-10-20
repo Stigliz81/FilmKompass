@@ -1,0 +1,2 @@
+# QR display from original high-resolution images
+Pillow==11.3.0

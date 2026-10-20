@@ -1,0 +1,137 @@
+{
+  "action": {
+    "file": "assets/genres/action.jpg",
+    "prompt": "Use case: stylized-concept. One original genre illustration for ACTION, a portrait poster aspect ratio 2:3. Cinematic premium painterly-realistic concept art, dark petrol/navy, restrained warm amber highlights, elegant unified series style, dramatic readable central silhouette. Scene: speeding unbranded car on a rain-wet elevated road, distant sparks and angular city architecture, sense of dynamic movement. NO text, titles, letters, branding, logos, recognizable movie imagery, celebrities, known characters or actual posters. Image is a genre illustration, not a real film cover. No border.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "scifi": {
+    "file": "assets/genres/scifi.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. SCIENCE FICTION: a unique elegant exploration spacecraft above a ringed alien planet, small glowing distant moon, cosmic scale.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "fantasy": {
+    "file": "assets/genres/fantasy.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. FANTASY: ancient winding stone stairway to an invented luminous castle in misty mountains, magical forest, no characters.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "drama": {
+    "file": "assets/genres/drama.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. DRAMA: a solitary anonymous person seen from behind by a rain-streaked window in an old apartment, a warm lamp, reflective human atmosphere.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "thriller": {
+    "file": "assets/genres/thriller.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. THRILLER: a single anonymous silhouette in a long rain-soaked alley, one amber-lit open doorway, suspenseful shadows and tension, no violence.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "crime": {
+    "file": "assets/genres/crime.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. CRIME / DETECTIVE: a vintage magnifying glass, unmarked evidence envelope and gloves on a dark detective desk, moody venetian-blind light, NO writing or weapons.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "horror": {
+    "file": "assets/genres/horror.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. HORROR: an abandoned original manor partly hidden in a twisted dark forest, subtle pale mist, one dim warm window, eerie gothic atmosphere, no gore or characters.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "comedy": {
+    "file": "assets/genres/comedy.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. COMEDY: two elegant theatrical comedy masks and a tipped unbranded bowler hat, playful scattered confetti caught in a warm spotlight, tasteful whimsical still life, no recognizable characters.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "romance": {
+    "file": "assets/genres/romance.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. ROMANCE: two anonymous distant silhouettes on a quiet bridge under a single warm lamp, rain reflections, a small bouquet of flowers in the foreground, intimate and hopeful.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "adventure": {
+    "file": "assets/genres/adventure.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. ADVENTURE: an old unmarked compass and coiled rope on a rocky ledge above an unexplored tropical valley, distant waterfall and amber sunrise, sense of discovery.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "animation": {
+    "file": "assets/genres/animation.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. ANIMATION: an original whimsical miniature clockwork town floating above soft clouds, tiny colorful unbranded houses and warm glowing windows, handcrafted animated-world quality, navy/petrol and amber, no characters.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "documentary": {
+    "file": "assets/genres/documentary.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. DOCUMENTARY: a professional unbranded vintage documentary camera on a tripod looking over a vast mountain landscape, dawn mist and warm sunlight, cinematic observation of the real world.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "western": {
+    "file": "assets/genres/western.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. WESTERN: an anonymous solitary rider crossing an open frontier canyon at dusk, distant wooden settlement, warm amber horizon against dark blue storm clouds, classic spacious western landscape.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "history": {
+    "file": "assets/genres/history.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. HISTORY AND WAR: weathered ancient helmet and a furled plain banner beside an old stone fortress, distant misty battlefield empty of people, somber historical atmosphere, no insignia, no politics, no gore.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  },
+  "neutral": {
+    "file": "assets/genres/neutral.jpg",
+    "prompt": "Use case: stylized-concept. One original cinematic genre illustration, portrait 2:3. Premium painterly-realistic concept art, dark petrol and navy, restrained warm amber highlights, unified atmospheric series style, strong readable central composition. No text, titles, letters, brands, logos, recognizable movie imagery, celebrities, known characters, actual film posters or border. Genre illustration only. NEUTRAL CINEMA DEFAULT: a single elegant unbranded metal film reel and short curling strip of blank celluloid on a dark petrol background, gentle warm amber rim light, minimal still life, no symbols or text. Usable for any unknown film genre.",
+    "tool": "Built-in Imagegen",
+    "size": [
+      400,
+      600
+    ]
+  }
+}
