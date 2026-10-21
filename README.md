@@ -8,6 +8,8 @@ FilmKompass ist ein kostenloses Windows-Programm zum Herunterladen, Durchsuchen,
 
 **Kostenlos · Windows 11 · Open Source**
 
+**[FilmKompass-Webseite mit weiteren Programmeinblicken](https://stigliz81.github.io/FilmKompass/)**
+
 ## FilmKompass herunterladen
 
 - **[FilmKompass 1.0 für Windows](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Windows-portabel.zip)**
