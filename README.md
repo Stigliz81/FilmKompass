@@ -6,7 +6,7 @@
 
 FilmKompass ist ein kostenloses Windows-Programm zum Herunterladen, Durchsuchen, Filtern und Exportieren deiner öffentlich sichtbaren Moviepilot-Bewertungen. Deine Filmbibliothek wird lokal auf deinem Computer gespeichert.
 
-**Kostenlos · Windows 11 · Open Source**
+**Kostenlos · Windows (64-Bit) · Open Source**
 
 **[FilmKompass-Webseite mit weiteren Programmeinblicken](https://stigliz81.github.io/FilmKompass/)**
 
@@ -16,7 +16,7 @@ FilmKompass ist ein kostenloses Windows-Programm zum Herunterladen, Durchsuchen,
 - [Python-Quellcode](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Quellcode.zip)
 - [SHA256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/SHA256SUMS.txt)
 
-Keine separate Python-Installation nötig. Die EXE ist derzeit unsigniert; nutze diese offizielle Bezugsquelle und prüfe die Prüfsummen. Windows-Sicherheitsfunktionen müssen dafür nicht pauschal deaktiviert werden. Die Windows-Version ist für Windows 11 x64 vorbereitet.
+Keine separate Python-Installation nötig. Die EXE ist derzeit unsigniert; nutze diese offizielle Bezugsquelle und prüfe die Prüfsummen. Windows-Sicherheitsfunktionen müssen dafür nicht pauschal deaktiviert werden. Windows 11 x64 ist getestet; Windows 10 x64 ist technisch plausibel, aber noch nicht praktisch getestet ([Systemdetails](docs/WINDOWS_KOMPATIBILITAET.md)).
 
 ## So sieht FilmKompass aus
 
