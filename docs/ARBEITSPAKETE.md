@@ -7,3 +7,5 @@
 - **AP16.09: FilmKompass 1.1 veröffentlicht**, Build `20261108_191845`, Tag `v1.1.1`. [Vollständiger Abschluss](AP16.09_FINAL_RELEASE.md), [Startanleitung](V1.1_START.md), [Release](https://github.com/Stigliz81/FilmKompass/releases/tag/v1.1.1).
 
 122 finale Regressionstests bestanden; vier CI-Umgebungen erfolgreich. Webseite, öffentliche Downloads und Versionsdatei geprüft. Die offenen nativen/Live-Prüfungen sind im Abschlussbericht ausdrücklich getrennt aufgeführt.
+
+- AP16.10.2: **Freigegebene Website veröffentlicht**, Commit 2e650ed, bestehender Pages-Workflow erfolgreich. [Abschluss](AP16.10.2_ABSCHLUSS.md), [manuelle Google-Prüfung](GOOGLE_INDEXIERUNG.md). Vier neue Screenshots und öffentliche Ziele geprüft; Windows-Release v1.1.1 unverändert. Authentifizierter Search-Console-Status nicht auslesbar.
