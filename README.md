@@ -4,9 +4,9 @@
 
 ## Download
 
-- [Windows x64 – portables ZIP](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/FilmKompass-1.1-Windows-portabel.zip)
-- [Python-Quellcode](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/FilmKompass-1.1-Quellcode.zip)
-- [SHA-256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/SHA256SUMS.txt)
+- [Windows x64 – portables ZIP](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.1/FilmKompass-1.1-Windows-portabel.zip)
+- [Python-Quellcode](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.1/FilmKompass-1.1-Quellcode.zip)
+- [SHA-256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.1/SHA256SUMS.txt)
 - [Webseite](https://stigliz81.github.io/FilmKompass/) · [Releasehistorie einschließlich 1.0](https://github.com/Stigliz81/FilmKompass/releases)
 
 ZIP vollständig in einen beschreibbaren Ordner entpacken und FilmKompass.exe starten. Der komplette `_internal`-Ordner gehört dazu. Keine separate Python-Installation oder Administratorrechte erforderlich. EXE unsigniert; offizielle Quelle und Prüfsummen verwenden, Windows-Sicherheitsfunktionen eingeschaltet lassen.

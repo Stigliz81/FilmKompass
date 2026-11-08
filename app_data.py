@@ -55,6 +55,8 @@ def backup_managed_data(catalog, destination):
     import hashlib
     root = catalog.db_path.parent
     preview = managed_data_preview(root)
+    root = preview['root']
+    database = root / catalog.db_path.name
     destination = Path(destination).absolute()
     for part in (destination, *destination.parents):
         _not_link(part)
@@ -73,7 +75,7 @@ def backup_managed_data(catalog, destination):
             if not path.is_file() or path.name in ('manager.sqlite-wal','manager.sqlite-shm','manager.sqlite-journal'):
                 continue
             _not_link(path)
-            source = snapshot if path == catalog.db_path else path
+            source = snapshot if path == database else path
             data = source.read_bytes()
             name = path.relative_to(root).as_posix()
             archive.writestr(name, data)
