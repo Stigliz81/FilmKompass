@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Filmliste mit KI analysieren: Anleitung und Prompts | FilmKompass</title>
+  <meta name="description" content="FilmKompass-Export freiwillig mit KI auswerten: vier kopierbare Prompts für Filmgeschmack, Streamingempfehlungen, Statistiken und Wochenberichte. Mit fiktiven Beispieldateien.">
+  <link rel="canonical" href="https://stigliz81.github.io/FilmKompass/ki-filmliste-analysieren.html">
+  <meta name="theme-color" content="#0b141d">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Deine Filmliste mit KI analysieren – FilmKompass">
+  <meta property="og:description" content="Vier Prompts für Filmgeschmack und Streaming, fiktive Beispieldateien und eine praktische KI-Anleitung.">
+  <meta property="og:url" content="https://stigliz81.github.io/FilmKompass/ki-filmliste-analysieren.html">
+  <meta property="og:image" content="https://stigliz81.github.io/FilmKompass/assets/filmkompass-preview.webp">
+  <meta property="og:image:alt" content="FilmKompass-Kompasssymbol mit goldener Kompassrose, roter und türkisblauer Nadel">
+  <link rel="icon" href="assets/filmkompass.png?v=20261107-ap1506" type="image/png">
+  <link rel="stylesheet" href="style.css?v=20261108-ap1608">
+  <script src="ai-prompts.js?v=20261107-ap1506" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://stigliz81.github.io/FilmKompass/ki-filmliste-analysieren.html#anleitung",
+    "headline": "Deine Filmliste mit KI analysieren",
+    "description": "FilmKompass-Exporte freiwillig auswerten: vier Prompts für Filmgeschmack, Streamingempfehlungen, Statistiken und Wochenberichte.",
+    "inLanguage": "de",
+    "url": "https://stigliz81.github.io/FilmKompass/ki-filmliste-analysieren.html",
+    "mainEntityOfPage": "https://stigliz81.github.io/FilmKompass/ki-filmliste-analysieren.html",
+    "about": {"@id": "https://stigliz81.github.io/FilmKompass/#software"}
+  }
+  </script>
+</head>
+<body>
+<a class="skip" href="#inhalt">Zum Inhalt</a>
+<header class="nav wrap guide-nav">
+  <a class="brand" href="./"><img src="assets/filmkompass.png?v=20261107-ap1506" width="42" height="42" alt="">FilmKompass <span>1.1</span></a>
+  <nav aria-label="Hauptnavigation"><a href="./">Startseite</a><a href="moviepilot-bewertungen-exportieren.html">Export-Anleitung</a><a href="#prompts">Vier Prompts</a><a href="#beispiele">Beispieldateien</a></nav>
+</header>
+<main id="inhalt" class="wrap guide-page">
+<article>
+<header class="guide-header">
+  <p class="eyebrow">DEINE BEWERTUNGEN ALS AUSGANGSPUNKT</p>
+  <h1>Deine Filmliste mit KI analysieren</h1>
+  <p class="guide-lead">Was verbindet deine Lieblingsfilme? Welche Serien bewertest du besonders gut? Deine exportierte Bewertungsliste kann einem geeigneten KI-Dienst helfen, solche Muster zu untersuchen und neue Filme vorzuschlagen.</p>
+  <p>FilmKompass erstellt die Excel- oder CSV-Datei lokal. Du entscheidest anschließend selbst, ob du sie bei ChatGPT, Gemini oder einem anderen Anbieter bereitstellst. <strong>Eine eingebaute KI-Funktion oder automatische Datenübertragung gibt es nicht.</strong></p>
+</header>
+<nav class="guide-contents" aria-label="Inhalt der KI-Anleitung"><strong>Direkt zum passenden Abschnitt</strong><ul><li><a href="#ablauf">So gehst du vor</a></li><li><a href="#prompts">Vier Prompts</a></li><li><a href="#beispiele">Fiktive Beispieldaten</a></li><li><a href="#dauerhaft">Liste aktuell halten</a></li><li><a href="#datenschutz">Datenschutz und Grenzen</a></li><li><a href="#quellen">Offizielle Hilfen</a></li></ul></nav>
+<section class="guide-section" id="ablauf">
+  <h2>Von der Exportdatei zur Auswertung</h2>
+  <ol class="guide-steps">
+    <li><h3>Vollständige Filmliste exportieren</h3><p>Aktualisiere bei Bedarf deine öffentlich sichtbaren Moviepilot-Bewertungen in FilmKompass. Wähle unter <strong>Filmdatenbank exportieren</strong> die <strong>gesamte Filmdatenbank</strong> und <code>.xlsx</code> oder <code>.csv</code>. Für persönliche Empfehlungen ist eine vollständige Datei sinnvoll, damit schon vorhandene Titel ausgeschlossen werden können.</p><p><a href="moviepilot-bewertungen-exportieren.html#anleitung">Zur bebilderten Export-Anleitung</a></p></li>
+    <li><h3>Datei bewusst bereitstellen</h3><p>Wähle die aktuelle Datei über die Dateifunktion deines KI-Dienstes aus. Eine unterstützte Verbindung zu einem privaten Speicher kann eine Alternative sein. Ob dein Anbieter das Format lesen kann, hängt von Dienst, Konto und verfügbaren Funktionen ab. Lasse dir zunächst Dateiname, erkannte Spalten und Anzahl gelesener Zeilen nennen.</p></li>
+    <li><h3>Filmgeschmack und Empfehlungen prüfen</h3><p>Nutze einen der vier Prompts unten. Prüfe, ob die Auswertung zu deinen tatsächlichen Noten passt. Für Streamingempfehlungen benötigt die KI dein Land und deine bestehenden Abonnements sowie aktuellen Webzugriff. Empfehlungen sollen alle bereits enthaltenen Titel ausschließen – auch Titel mit Note 0. Ein Titel, der nicht in der Bewertungsliste steht, ist nicht automatisch ein ungesehener Film.</p></li>
+    <li><h3>Die Liste später erneut verwenden</h3><p>Bewahre eine private aktuelle Exportdatei auf. Nach neuen Bewertungen exportierst du die vollständige Liste erneut und stellst vor einer weiteren Analyse sicher, dass genau diese Fassung verwendet wird. <a href="#dauerhaft">So hältst du die Datei verfügbar und aktuell</a>.</p></li>
+  </ol>
+</section>
+<section class="guide-section" id="prompts">
+  <h2>Vier Prompts zum Kopieren</h2>
+  <p>Diese Prompts funktionieren mit den sechs Exportfeldern <strong>Typ, Titel, Jahr, Note, Bewertet am und Genre</strong>. Stelle zuerst die Datei bereit. Ein Prompt allein gibt der KI keinen Zugriff auf deine Bibliothek.</p>
+  <article class="prompt-card">
+    <h3>Prompt 1 – Filmgeschmack analysieren</h3>
+    <p class="prompt-text" id="prompt-1" tabindex="-1">Lies meine bereitgestellte FilmKompass-Datei vollständig ein. Prüfe zuerst, ob du auf die Datei zugreifen kannst. Analysiere anschließend meinen Filmgeschmack, meine Lieblingsgenres, besonders hoch bewertete Filme und Serien sowie interessante Bewertungsmuster. Berücksichtige die tatsächliche Bewertungsskala und die Anzahl vorhandener Bewertungen. Erfinde keine fehlenden Informationen.</p>
+    <button class="copy-prompt" type="button" data-copy-target="prompt-1" aria-label="Prompt 1 kopieren" disabled>Prompt kopieren</button><p class="prompt-status" role="status" aria-live="polite"></p>
+  </article>
+  <article class="prompt-card">
+    <h3>Prompt 2 – Persönliche Streamingempfehlungen</h3>
+    <p class="prompt-text" id="prompt-2" tabindex="-1">Verwende meine aktuelle vollständige FilmKompass-Bewertungsliste. Prüfe zuerst den tatsächlichen Dateizugriff und die Vollständigkeit. Frage nach meinem Land und meinen bestehenden Streamingabonnements, falls diese Angaben fehlen. Recherchiere die Streamingverfügbarkeit aktuell für genau dieses Land und diese Abos. Empfiehl zehn passende Filme, die ohne zusätzliche Leih- oder Kaufkosten in meinen vorhandenen Abonnements enthalten sind; berücksichtige kostenpflichtige Zusatzkanäle nur, wenn ich sie ausdrücklich als abonniert genannt habe. Schließe alle bereits in meiner Datei enthaltenen Titel aus, unabhängig von der Note, auch bei Note 0. Berücksichtige aktuelle neue Filmproduktionen ebenso wie ältere Filme, die neu oder nach einer Pause wieder ins Abo aufgenommen wurden. Nenne pro Vorschlag Titel, Erscheinungsjahr, Streamingdienst, geprüfte Aboverfügbarkeit mit Quelle und Prüfdatum, eine Begründung anhand meiner tatsächlichen Bewertungen sowie eine persönliche Bewertungsprognose von 0 bis 10. Kennzeichne die Prognose ausdrücklich als unsichere Schätzung und nicht als vorhandene Bewertung. Führe unbestätigte Streamingangebote getrennt als unsicher auf. Wenn sich weniger als zehn passende Abotitel belegen lassen oder kein aktueller Webzugriff möglich ist, sage das offen und erfinde keine Verfügbarkeiten.</p>
+    <button class="copy-prompt" type="button" data-copy-target="prompt-2" aria-label="Prompt 2 kopieren" disabled>Prompt kopieren</button><p class="prompt-status" role="status" aria-live="polite"></p>
+  </article>
+  <article class="prompt-card">
+    <h3>Prompt 3 – Statistiken und neue Entdeckungen</h3>
+    <p class="prompt-text" id="prompt-3" tabindex="-1">Analysiere meine FilmKompass-Liste nach Genres, Erscheinungsjahren, Filmen und Serien. Zeige die wichtigsten statistischen Auffälligkeiten und untersuche, welche Arten von Filmen ich besonders gut bewerte. Unterscheide Erscheinungsjahr und Bewertungsdatum. Das Bewertungsdatum ist nicht automatisch das Datum, an dem ich den Film gesehen habe. Berücksichtige fehlende Werte und kleine Stichproben.</p>
+    <button class="copy-prompt" type="button" data-copy-target="prompt-3" aria-label="Prompt 3 kopieren" disabled>Prompt kopieren</button><p class="prompt-status" role="status" aria-live="polite"></p>
+  </article>
+  <article class="prompt-card">
+    <h3>Prompt 4 – Wöchentlicher Streamingbericht</h3>
+    <p class="prompt-text" id="prompt-4" tabindex="-1">Erstelle einen persönlichen Streamingbericht anhand meiner aktuellen vollständigen FilmKompass-Bewertungsliste. Prüfe zuerst den tatsächlichen Zugriff auf alle Datensätze. Frage nach Land, vorhandenen Streamingabonnements und gegebenenfalls Zeitzone, wenn diese Angaben fehlen. Recherchiere die vergangenen sieben Tage und angekündigte Streamingstarts der kommenden sieben Tage; nenne Berichtsdatum und genaue Zeiträume. Unterscheide drei Gruppen: aktuelle neue Filmproduktionen, ältere Filme, die neu ins Abo kommen, und Filme, die nach einer Pause wieder im Abo verfügbar sind. Wenn du eine frühere Verfügbarkeit oder Pause nicht belegen kannst, kennzeichne die Einordnung als unsicher. Berücksichtige nur Titel ohne zusätzliche Leih- oder Kaufkosten innerhalb meiner genannten Abos und schließe sämtliche bereits in der FilmKompass-Datei enthaltenen Titel unabhängig von ihrer Note aus. Begründe die Auswahl mit meinem tatsächlichen Filmgeschmack und gib pro Titel eine ausdrücklich geschätzte persönliche Bewertungsprognose von 0 bis 10, Streamingdienst, Startdatum oder Verfügbarkeitsstatus sowie Quellen mit Prüfdatum an. Unterscheide bestätigte aktuelle Angebote von angekündigten Starts und unsicheren Angaben. Erfinde bei fehlendem Dateizugriff oder fehlender aktueller Recherche keine Ergebnisse. Biete mir zum Schluss optional einen wöchentlich wiederkehrenden Bericht an, wenn dein Dienst solche Aufgaben unterstützt. Richte nichts automatisch ein: Hole zuerst meine Zustimmung und kläre Termin, Uhrzeit und Zeitzone. Prüfe vor einer Einrichtung, ob die geplante Aufgabe tatsächlich auf die dann aktuelle vollständige Filmdatei und aktuelle Recherche zugreifen kann. Wenn das nicht möglich ist, erkläre die Einschränkung und biete die manuelle erneute Ausführung an. Behaupte eine Einrichtung nur nach einer echten Bestätigung mit gespeichertem Zeitplan.</p>
+    <button class="copy-prompt" type="button" data-copy-target="prompt-4" aria-label="Prompt 4 kopieren" disabled>Prompt kopieren</button><p class="prompt-status" role="status" aria-live="polite"></p>
+  </article>
+  <noscript><p>Die Kopierschaltflächen benötigen JavaScript. Du kannst jeden Prompt auch direkt markieren und kopieren.</p></noscript>
+  <p class="note">Streamingangebote ändern sich und unterscheiden sich nach Land und Abo. Eine persönliche Notenprognose ist eine Schätzung. Diese Webseite recherchiert keine Angebote und richtet keine Aufgaben ein. Wiederkehrende Berichte setzen deine Zustimmung und tatsächlich verfügbaren Datei- und Recherchezugriff im jeweiligen Dienst voraus. <a href="https://learn.chatgpt.com/docs/automations" rel="noreferrer">OpenAI: Voraussetzungen geplanter Aufgaben</a>.</p>
+</section>
+<section class="guide-section" id="beispiele">
+  <h2>Mit fiktiven Beispieldaten ausprobieren</h2>
+  <p><strong>Fiktive Beispieldaten:</strong> Beide Dateien enthalten dieselben 24 vollständig erfundenen Film- und Serienbewertungen. Auch die Titel sind erfunden. Es sind keine persönlichen Bewertungen und keine echte Moviepilot-Sammlung.</p>
+  <div class="example-downloads"><a class="button" href="beispiele/FilmKompass_Fiktive_Beispieldaten.csv" download>Beispiel als CSV</a><a class="button" href="beispiele/FilmKompass_Fiktive_Beispieldaten.xlsx" download>Beispiel als Excel/XLSX</a></div>
+  <p>Die Dateien wurden mit der unveränderten Exportfunktion der veröffentlichten Version 1.0 erzeugt. Die Spalten stehen in der Reihenfolge <code>Typ;Titel;Jahr;Note;Bewertet am;Genre</code>.</p>
+  <ul><li><strong>Note:</strong> Moviepilot-Skala von 0 bis 10 in Halbschritten. 0 bleibt ein gültiger gespeicherter Wert und darf nicht als fehlend oder als Beleg für „gesehen“ behandelt werden. FilmKompass zeigt seinen Notendurchschnitt nur für Werte größer als 0 an. Eine fehlende Note ist kein gültiger Bewertungsdatensatz und wird nicht durch 0 ersetzt.</li><li><strong>Fehlende Metadaten:</strong> Jahr, Bewertungsdatum oder Genre können leer bleiben. Die Beispieldateien enthalten solche Fälle.</li><li><strong>CSV:</strong> UTF-8 mit BOM, Semikolon als Trennzeichen, Dezimalkomma und Datum als <code>TT.MM.JJJJ</code>. Nutze in Excel bei Bedarf „Daten → Aus Text/CSV“ mit deutschem Zahlenformat.</li><li><strong>XLSX:</strong> echte numerische Noten und Jahreswerte sowie echte Datumszellen, wenn das Bewertungsdatum vorliegt. Halbnoten werden nicht zu Excel-Datumswerten.</li></ul>
+  <p class="note">Das Feld „Jahr“ ist das Erscheinungsjahr. „Bewertet am“ bezeichnet das Bewertungsdatum, nicht automatisch den Tag, an dem du den Titel gesehen hast. Empfehlungen auf Grundlage dieser fiktiven Titel sagen nichts über deinen persönlichen Filmgeschmack aus.</p>
+</section>
+<section class="guide-section" id="dauerhaft">
+  <h2>Deine Filmliste dauerhaft verfügbar halten</h2>
+  <p>Eine private Kopie kannst du lokal aufbewahren und optional in Google Drive ablegen. Drive speichert die Datei, solange du sie dort aufbewahrst und dein Konto sowie der nötige Speicher verfügbar bleiben. Google Drive ist für die KI-Nutzung keine Voraussetzung.</p>
+  <ol class="plain-steps"><li>Exportiere die vollständige Bewertungsliste aus FilmKompass.</li><li>Bewahre eine private Kopie lokal und bei Bedarf zusätzlich in Google Drive auf.</li><li>Pflege eine eindeutig bezeichnete aktuelle Datei, etwa <code>FilmKompass_Bewertungen_aktuell.xlsx</code>. Halte ältere Fassungen getrennt.</li><li>Ersetze die aktuelle Kopie nach neuen Bewertungen bewusst durch einen neuen vollständigen Export. FilmKompass aktualisiert sie nicht automatisch.</li><li>Wähle bei ChatGPT oder Gemini die aktuelle Datei erneut aus oder stelle sie über eine dort unterstützte Verbindung bereit. Auch eine lokale Datei kannst du erneut hochladen.</li><li>Kontrolliere vor jeder Auswertung, dass die KI auf die aktuelle Datei zugreifen und sämtliche Zeilen lesen konnte. Ein sichtbarer Dateiname allein beweist das nicht.</li></ol>
+  <h3>Was sich zwischen Unterhaltungen unterscheiden kann</h3>
+  <p>Eine KI hat nicht automatisch in jeder Unterhaltung Zugriff auf deine Datei. Eine bestehende Drive-Verbindung bedeutet auch keine kontinuierliche Hintergrundüberwachung. Möglichkeiten hängen von Anbieter, Konto, Berechtigungen, Dateityp und der verfügbaren Oberfläche ab.</p>
+  <p>In ChatGPT können bereits gespeicherte Dateien je nach verfügbarer Bibliotheks- oder Space-Funktion erneut ausgewählt werden. Ein Chat-Upload ist daher nicht grundsätzlich später verloren. Bei verbundenem Google Drive gelten die Berechtigungen des verbundenen Kontos und gegebenenfalls deines Arbeitsbereichs. <a href="https://help.openai.com/en/articles/20001052-using-library-to-manage-files-in-chatgpt" rel="noreferrer">OpenAI: gespeicherte Dateien wiederverwenden</a> · <a href="https://help.openai.com/en/articles/10929079-google-drive-app-and-setup-in-chatgpt" rel="noreferrer">OpenAI: Google Drive in ChatGPT</a>.</p>
+  <p>Gemini bietet die Auswahl unterstützter Dateien vom Gerät oder aus Google Drive. Dafür können eine Anmeldung, passende Verknüpfungen und Freigaben erforderlich sein; bei verwalteten Konten zusätzlich Einstellungen der Organisation. Prüfe die jeweils sichtbaren Optionen. <a href="https://support.google.com/gemini/answer/14903178?hl=de" rel="noreferrer">Google: Dateien in Gemini hochladen und analysieren</a>.</p>
+  <p class="note">Nutze private Freigaben. Du brauchst keinen öffentlichen Google-Drive-Freigabelink. Prüfe die Zugriffsrechte und Datenschutzbedingungen, bevor du persönliche Bewertungsdaten einem externen Anbieter bereitstellst.</p>
+</section>
+<section class="guide-section" id="datenschutz">
+  <h2>Datenschutz und Grenzen der Auswertung</h2>
+  <p>Filmgeschmack und Bewertungen sind persönliche Informationen. Bei einem Upload oder der Bereitstellung über einen verbundenen Dienst verarbeitet der externe KI-Anbieter diese Daten nach seinen Bedingungen und Einstellungen. Überlege vorher, ob du die gesamte Datei weitergeben möchtest.</p>
+  <p>Eine KI kann Zeilen übersehen, Titel verwechseln oder unpassende Empfehlungen geben. Fordere bei unvollständigem Dateizugriff einen klaren Hinweis statt erfundener Ergebnisse. Kleine Genregruppen und fehlende Metadaten machen statistische Aussagen unsicher. Die Prompts sind Arbeitshilfen, keine Garantie für eine vollständige oder richtige Auswertung.</p>
+  <p>Ein Excel-/CSV-Export ist außerdem kein vollständiges FilmKompass-Backup. <a href="moviepilot-bewertungen-exportieren.html#lokale-daten">Datenbank, eigene Bilder und PC-Wechsel sichern</a>.</p>
+</section>
+<section class="guide-section" id="quellen">
+  <h2>Offizielle Hilfen und Prüfstand</h2>
+  <p class="note">Angaben zu KI-Dateifunktionen geprüft am 07.11.2026. Oberflächen und Verfügbarkeit können sich ändern; konkrete Tarif-, Konto- oder Verfügbarkeitszusagen werden hier nicht gemacht.</p>
+  <ul><li><a href="https://help.openai.com/en/articles/20001052-using-library-to-manage-files-in-chatgpt" rel="noreferrer">OpenAI: Dateispeicherung und Library</a></li><li><a href="https://learn.chatgpt.com/docs/space" rel="noreferrer">OpenAI: Dateien und verbundene Quellen in Space</a></li><li><a href="https://help.openai.com/en/articles/10929079-google-drive-app-and-setup-in-chatgpt" rel="noreferrer">OpenAI: Google-Drive-Verbindung und Berechtigungen</a></li><li><a href="https://support.google.com/gemini/answer/14903178?hl=de" rel="noreferrer">Google: Dateien in Gemini hochladen und analysieren</a></li></ul>
+</section>
+<section class="guide-section guide-cta"><h2>Erst exportieren, dann selbst entscheiden</h2><p><a href="moviepilot-bewertungen-exportieren.html">Zur Export-Anleitung</a> · <a href="./">Zur FilmKompass-Startseite</a></p></section>
+</article>
+</main>
+<footer class="wrap"><div><a class="brand" href="./"><img src="assets/filmkompass.png?v=20261107-ap1506" width="32" height="32" alt="">FilmKompass</a><p>Copyright (c) 2026 Stigliz81.<br>Kontakt: <a href="mailto:stigliz1981@gmail.com">stigliz1981@gmail.com</a> · <a href="https://github.com/Stigliz81/FilmKompass/issues">GitHub Issues</a></p></div><div><p>Unabhängiges Projekt, nicht offiziell mit Moviepilot verbunden.</p><p>Ohne Nutzertracking. Hosting durch GitHub Pages;<br>dabei können technische Zugriffsdaten verarbeitet werden.</p><a href="datenschutz.html">Hinweise zum Website-Datenschutz</a></div></footer>
+</body>
+</html>
