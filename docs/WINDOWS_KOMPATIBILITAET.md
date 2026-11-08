@@ -1,16 +1,26 @@
+# FilmKompass 1.1 – aktueller Kompatibilitätsstand
+
+Windows 10/11 x64: Hauptfunktionen und korrigiertes Taskleistensymbol wurden vom Nutzer praktisch bestätigt. Der finale AP16.09-Build wurde zusätzlich als entpackte EXE unter Windows 11 mit isolierten Testdaten geprüft. Kein erneuter Windows-10-Test des finalen Pakets. Details: [AP16.09](AP16.09_FINAL_RELEASE.md).
+
+Die folgende Paketuntersuchung ist historische Dokumentation von 1.0, keine Messung des neuen Pakets.
+
 # FilmKompass 1.0 – Windows-Kompatibilität des veröffentlichten Pakets
 
-Stand: 21.10.2026. Diese Untersuchung betrifft ausschließlich die bereits veröffentlichte portable EXE aus Release v1.0.0. Es wurde kein neuer Build erstellt. Die ZIP enthält 25.387.531 Bytes, also rund 25,4 MB bzw. 24,2 MiB.
+Stand: 07.11.2026; öffentliche Windows-10-Angabe in AP15.06 präzisiert. Die folgende technische Paketuntersuchung vom 21.10.2026 betrifft die veröffentlichte portable EXE aus Release v1.0.0. Deren ZIP enthält 25.387.531 Bytes, also rund 25,4 MB bzw. 24,2 MiB. Der separate lokale AP15.06-Testbuild ist kein neues öffentliches Release; seine Prüfung wird getrennt dokumentiert.
 
 | Betriebssystem, jeweils x64 | Ergebnis für dieses Paket |
 | --- | --- |
 | Windows 11 | **Getestet:** Die veröffentlichte Runtime wurde mit isolierten Beispieldaten erfolgreich gestartet und in AP12/AP13 nativ bedient. Keine vollständige Abnahme aller Windows-11-Versionen oder Hardwarekonfigurationen. |
-| Windows 10 | **Technisch kompatibel laut grundlegenden Voraussetzungen, nicht praktisch getestet.** Python, Bootloader und die untersuchten nativen Komponenten sprechen dafür. Ein erfolgreicher Start auf Windows 10 wird ausdrücklich nicht behauptet. |
+| Windows 10 (22H2, 64-Bit) | **Voraussichtlich lauffähig. Ein vollständiger Funktionstest steht noch aus.** |
 | Windows 8.1 | **Nicht bestätigt.** Die dokumentierte Python-Untergrenze allein ist kein Beleg für den gesamten konkreten Build mit Pillow, Tcl/Tk, OpenSSL, Systembibliotheken und aktuellen HTTPS-Zertifikaten. Kein Praxistest; keine Bewerbung als unterstütztes Zielsystem. |
 | Windows 8 | **Nicht unterstützt:** unterhalb der dokumentierten Windows-Untergrenze von Python 3.13. Kein Legacy-Build. |
 | Windows 7 | **Nicht unterstützt:** unterhalb der dokumentierten Windows-Untergrenze von Python 3.13. Kein Legacy-Build. |
 
 ## Untersuchte Laufzeit
+
+### Ergänzung AP16.02 (lokaler Entwicklungsstand)
+
+Der Benutzer bestätigte am 07.11.2026 unter Windows 10 den erfolgreichen Start der AP15.06-Fassung, den Download persönlicher Moviepilot-Bewertungen und grundlegende Bedienung. Die neue AP16.02-Fassung mit Layout- und Listenerweiterungen ist damit nicht vollständig unter Windows 10 abgenommen. Öffentliche Webseitenangaben bleiben bis zum erneuten Praxistest unverändert. Persönliche Gerätedetails werden nicht veröffentlicht.
 
 - Gebündelte Python-DLL: **CPython 3.13.16**, AMD64. Version direkt aus der veröffentlichten Laufzeitdatei geprüft.
 - **PyInstaller 6.22.3** in der zugehörigen Buildumgebung; die ausführbare `.text`-Sektion des EXE-Bootloaders stimmt mit deren `runw.exe` überein. Die PyInstaller-Dokumentation nennt Windows 8 und neuer als Grundvoraussetzung; Python und alle weiteren Abhängigkeiten können diese Grenze erhöhen.
@@ -20,7 +30,7 @@ Stand: 21.10.2026. Diese Untersuchung betrifft ausschließlich die bereits verö
 - **73 native PE-Dateien** untersucht, alle AMD64. Python importiert unter anderem `api-ms-win-core-path-l1-1-0.dll`, `PathCchCombineEx`, `PathCchSkipRoot`, `GetSystemTimePreciseAsFileTime` und `AddDllDirectory`. Weitere Standardimporte betreffen u. a. Kernel32, User32, GDI32, Winsock, BCrypt und Crypt32.
 - Visual-C-Runtime `VCRUNTIME140.dll`, `ucrtbase.dll` und zahlreiche UCRT/API-Set-Dateien sind Bestandteil des OneDir-Pakets. Das ersetzt weder sämtliche Betriebssystem-DLLs noch eine Prüfung auf einem älteren, ungepatchten Windows. Die im PE-Header eingetragene Subsystemversion allein beweist keine Betriebssystemkompatibilität.
 
-Ein vorhandenes Windows 11 wurde nicht als Windows-10-Test ausgegeben. Für Windows 10/8.1/8/7 wurde keine geeignete isolierte Zielumgebung getestet. Es wurden keine virtuellen Maschinen neu installiert und keine produktiven Nutzerdaten verwendet. Der vollständige `_internal`-Ordner muss neben der EXE erhalten bleiben. Eine separate Python-Installation ist nicht erforderlich.
+Ein vorhandenes Windows 11 wird nicht als Windows-10-Test ausgegeben. Ein vollständiger Windows-10-Funktionstest einschließlich Online-Download ist weiterhin offen. Für Windows 8.1/8/7 liegt ebenfalls keine eigene praktische Abnahme vor. Es wurden keine virtuellen Maschinen neu installiert und keine produktiven Nutzerdaten für die technische Untersuchung verwendet. Der vollständige `_internal`-Ordner muss neben der EXE erhalten bleiben. Eine separate Python-Installation ist nicht erforderlich.
 
 Die Aussage zur technischen Lauffähigkeit ist von Microsofts Sicherheitsunterstützung einer Windows-Version zu trennen. Der allgemeine Support für Windows 10 endete am 14.10.2025; gesonderte ESU-/LTSC-Regelungen können abweichen. Für den alltäglichen Einsatz sollte ein mit Sicherheitsupdates versorgtes System verwendet werden.
 

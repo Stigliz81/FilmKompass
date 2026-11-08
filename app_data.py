@@ -10,7 +10,78 @@ from manager_core import APP_NAME, data_directory
 MARKER = ".moviepilot-manager-owned.json"
 FILES = {"manager.sqlite", "manager.sqlite-wal", "manager.sqlite-shm", "manager.sqlite-journal",
          "settings.json", "settings.tmp", MARKER}
-DIRECTORIES = {"backup", "backups", "exports", "diagnose", "browser-profile", "tmp", "temp", "user-images"}
+DIRECTORIES = {"backup", "backups", "exports", "diagnose", "browser-profile", "tmp", "temp", "user-images", "fanart-cache"}
+
+
+def automatic_backup_directory():
+    """Resolve redirected Windows Documents via its known-folder identity, fail closed."""
+    import sys
+    if sys.platform != 'win32':
+        raise OSError('Der Windows-Dokumenteordner konnte nicht ermittelt werden.')
+    import ctypes
+    from ctypes import wintypes
+    import uuid
+    folder_id = (ctypes.c_byte * 16).from_buffer_copy(uuid.UUID('FDD39AD0-238F-46AF-ADB4-6C85480369C7').bytes_le)
+    value = ctypes.c_void_p()
+    shell = ctypes.windll.shell32
+    shell.SHGetKnownFolderPath.argtypes = [ctypes.c_void_p,wintypes.DWORD,wintypes.HANDLE,ctypes.POINTER(ctypes.c_void_p)]
+    shell.SHGetKnownFolderPath.restype = ctypes.c_long
+    if shell.SHGetKnownFolderPath(ctypes.byref(folder_id),0,None,ctypes.byref(value)) != 0:
+        raise OSError('Windows-Dokumenteordner nicht verfügbar. Keine Daten gelöscht.')
+    try:
+        documents = Path(ctypes.wstring_at(value))
+    finally:
+        ctypes.windll.ole32.CoTaskMemFree.argtypes = [ctypes.c_void_p]
+        ctypes.windll.ole32.CoTaskMemFree(value)
+    if not documents.is_absolute():
+        raise ValueError('Windows meldet keinen absoluten Dokumenteordner.')
+    return documents / 'FilmKompass' / 'Sicherungen'
+
+
+def verified_backup(catalog, folder=None):
+    import sqlite3
+    backup = catalog.backup(folder)
+    from contextlib import closing
+    with closing(sqlite3.connect(backup)) as con:
+        if con.execute('PRAGMA quick_check').fetchone()[0] != 'ok':
+            raise ValueError('Sicherung konnte nicht geprüft werden. Nichts gelöscht.')
+        if list(con.iterdump()) != list(catalog.con.iterdump()):
+            raise ValueError('Sicherung stimmt nicht mit der Datenbank überein. Nichts gelöscht.')
+    return backup
+
+
+def backup_managed_data(catalog, destination):
+    import zipfile
+    import hashlib
+    root = catalog.db_path.parent
+    preview = managed_data_preview(root)
+    destination = Path(destination).absolute()
+    for part in (destination, *destination.parents):
+        _not_link(part)
+    if destination.resolve().is_relative_to(root.resolve()):
+        raise ValueError('Sicherung muss außerhalb des Appdatenordners liegen.')
+    destination.mkdir(parents=True, exist_ok=True)
+    # Probe actual write access, not just permission bits; never replace an existing file.
+    import tempfile
+    with tempfile.TemporaryFile(dir=destination) as probe:
+        probe.write(b'FilmKompass backup probe');probe.flush()
+    snapshot = verified_backup(catalog, destination)
+    target = snapshot.with_suffix('.zip')
+    hashes = {}
+    with zipfile.ZipFile(target, 'x', compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in preview['entries']:
+            if not path.is_file() or path.name in ('manager.sqlite-wal','manager.sqlite-shm','manager.sqlite-journal'):
+                continue
+            _not_link(path)
+            source = snapshot if path == catalog.db_path else path
+            data = source.read_bytes()
+            name = path.relative_to(root).as_posix()
+            archive.writestr(name, data)
+            hashes[name] = hashlib.sha256(data).hexdigest()
+    with zipfile.ZipFile(target) as archive:
+        if archive.testzip() or any(hashlib.sha256(archive.read(n)).hexdigest()!=h for n,h in hashes.items()):
+            raise ValueError('Appdatensicherung nicht verifiziert. Nichts gelöscht.')
+    return target
 
 
 def _not_link(path: Path):

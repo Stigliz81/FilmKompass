@@ -64,3 +64,14 @@ Thumbs.db
 /*.code-workspace
 /docs/screenshots/erststart.jpg
 /docs/screenshots/spenden.jpg
+
+# Explicit public website sources and the two approved fictitious examples only.
+!/site/*.html
+!/site/assets/*.png
+!/site/beispiele/FilmKompass_Fiktive_Beispieldaten.csv
+!/site/beispiele/FilmKompass_Fiktive_Beispieldaten.xlsx
+!/tests/fixtures/ap1602_public_pages.json
+
+# Developer key and downloaded third-party artwork are always local/private.
+/fanart.local.json
+fanart-cache/

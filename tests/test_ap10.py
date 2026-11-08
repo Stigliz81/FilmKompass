@@ -14,22 +14,22 @@ from manager_core import read_export, Catalog
 
 class AP10Tests(unittest.TestCase):
     def test_central_build_and_repeatable_windows_resource(self):
-        self.assertEqual(app_info.APP_VERSION, '1.0')
+        self.assertEqual(app_info.APP_VERSION, '1.1')
         self.assertEqual(app_info.BUILD_NUMBER, 2)
-        self.assertEqual(app_info.APP_TITLE, 'FilmKompass 1.0')
-        self.assertEqual(app_info.WINDOWS_FILE_VERSION, (1, 0, 0, 2))
+        self.assertEqual(app_info.APP_TITLE, 'FilmKompass 1.1')
+        self.assertEqual(app_info.WINDOWS_FILE_VERSION, (1, 1, 0, 2))
         first = app_info.windows_version_info()
         self.assertEqual(first, app_info.windows_version_info())
-        self.assertIn("StringStruct('FileVersion', '1.0.0.2')", first)
-        self.assertIn("StringStruct('ProductVersion', '1.0')", first)
+        self.assertIn("StringStruct('FileVersion', '1.1.0.2')", first)
+        self.assertIn("StringStruct('ProductVersion', '1.1')", first)
         self.assertIn('Copyright (c) 2026 Stigliz81', first)
         # Simulate an explicitly changed central build number, without editing it.
         namespace = {'__file__': app_info.__file__, '__name__': 'version_fixture'}
         source = Path(app_info.__file__).read_text(encoding='utf-8')
         exec(compile(source.replace('BUILD_NUMBER = 2', 'BUILD_NUMBER = 3'), 'app_info.py', 'exec'), namespace)
-        self.assertEqual(namespace['APP_VERSION'], '1.0')
-        self.assertEqual(namespace['FILE_VERSION'], '1.0.0.3')
-        self.assertIn("'1.0.0.3'", namespace['windows_version_info']())
+        self.assertEqual(namespace['APP_VERSION'], '1.1')
+        self.assertEqual(namespace['FILE_VERSION'], '1.1.0.3')
+        self.assertIn("'1.1.0.3'", namespace['windows_version_info']())
         self.assertEqual(app_info.BUILD_NUMBER, 2)
 
     def test_all_and_filtered_exports_contain_only_six_public_fields(self):

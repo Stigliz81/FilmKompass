@@ -50,19 +50,31 @@ def media_badge(media_type):
 
 class ArtCache:
     """At most 48 ready Tk photos; no scroll-time decoding or resizing."""
-    def __init__(self,folder,user_store):
+    def __init__(self,folder,user_store,online_store=None):
         self.folder=folder;self.user_store=user_store;self.photos=OrderedDict()
+        self.online_store=online_store
 
-    def get(self,row,size):
+    def get(self,row,size,*,contain=False):
         user=self.user_store.path_for(row['url'])
-        filename=user or self.folder/(genre_group(row.get('genres',''))+'.jpg')
+        online=self.online_store.path_for(row['url']) if not user and self.online_store else None
+        filename=user or online or self.folder/(genre_group(row.get('genres',''))+'.jpg')
         if not filename.is_file():filename=self.folder/'neutral.jpg'
-        key=(str(filename),tuple(size))
+        key=(str(filename),tuple(size),contain)
         if key in self.photos:self.photos.move_to_end(key);return self.photos[key]
         try:
-            with Image.open(filename) as im:im=ImageOps.fit(im.convert('RGB'),size,Image.Resampling.LANCZOS)
+            with Image.open(filename) as source:
+                source=ImageOps.exif_transpose(source).convert('RGB')
+                im=(ImageOps.pad(source,size,Image.Resampling.LANCZOS,color='#101b25') if contain
+                    else ImageOps.fit(source,size,Image.Resampling.LANCZOS))
         except (OSError,ValueError):
-            with Image.open(self.folder/'neutral.jpg') as fallback:im=ImageOps.fit(fallback.convert('RGB'),size,Image.Resampling.LANCZOS)
+            try:
+                with Image.open(self.folder/'neutral.jpg') as fallback:
+                    im=(ImageOps.pad(fallback.convert('RGB'),size,Image.Resampling.LANCZOS,color='#101b25') if contain
+                        else ImageOps.fit(fallback.convert('RGB'),size,Image.Resampling.LANCZOS))
+            except (OSError,ValueError):
+                # Last-resort surface only when even bundled fallback art is unavailable.
+                # Keep cards/text usable; never abort the whole page on optional artwork.
+                im=Image.new('RGB',size,'#243b4c')
         photo=ImageTk.PhotoImage(im)
         self.photos[key]=photo
         while len(self.photos)>48:self.photos.popitem(last=False)

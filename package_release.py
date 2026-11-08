@@ -10,9 +10,12 @@ from app_info import APP_VERSION, BUILD_NUMBER, FILE_VERSION, PACKAGE_STEM, EXE_
 
 ROOT = Path(__file__).resolve().parent
 SOURCE_FILES = (
-    "AGENTS.md", ".gitignore", ".gitattributes", ".github/workflows/tests.yml",
+    "AGENTS.md", ".gitignore", ".gitattributes", ".github/workflows/tests.yml", "tests/test_ap1606.py",
     "README.md", "GITHUB_RELEASE_CHECKLIST.md", "THIRD_PARTY_NOTICES.md", "LICENSE",
-    "app_info.py", "manager_core.py", "moviepilot_manager.py", "moviepilot_exporter.py",
+    "app_info.py", "manager_core.py", "moviepilot_manager.py", "moviepilot_exporter.py", "parallel_covers.py", "table_links.py", "windows_taskbar.py", "tests/test_ap16071.py", "tests/test_ap16072.py", "program_updates.py", "tests/test_ap1607.py", "tests/test_ap1607_final.py", "tests/test_parallel_covers.py",
+    "fanart_covers.py", "fanart_view.py", "fanart.local.example.json", "docs/FANART.md", "tests/test_fanart.py", "tests/test_v11.py", "tests/test_ap1603.py",
+    "moviepilot_lists.py", "movie_lists_view.py", "tests/test_moviepilot_lists.py", "docs/AP16_01_LIST_IMPORT.md",
+    "tests/test_ap1602.py", "tests/fixtures/ap1602_public_pages.json", "docs/AP16.02_README.md",
     "genre_art.py", "thumbnail_view.py", "user_images.py", "tests/test_ap03.py", "docs/GENRE_ART.json", "docs/AP03_IMAGES.md",
     "assets/genres/action.jpg", "assets/genres/scifi.jpg", "assets/genres/fantasy.jpg", "assets/genres/drama.jpg", "assets/genres/thriller.jpg", "assets/genres/crime.jpg", "assets/genres/horror.jpg", "assets/genres/comedy.jpg", "assets/genres/romance.jpg", "assets/genres/adventure.jpg", "assets/genres/animation.jpg", "assets/genres/documentary.jpg", "assets/genres/western.jpg", "assets/genres/history.jpg", "assets/genres/neutral.jpg",
     "tests/test_ap11.py", "tests/test_ap10.py", "tests/test_ap08.py", "tests/test_ap07.py", "tests/test_ap06.py", "tests/test_ap05.py", "header_backdrop.py", "tests/test_ap04.py", "catalog_view.py", "compact_widgets.py", "tests/test_ap02.py", "docs/screenshots/filmkompass-1.0-library.png", "docs/screenshots/filmkompass-1.0-profile.png", "docs/AP02_RESEARCH.md", "docs/BACKGROUNDS.md",
@@ -27,7 +30,7 @@ SOURCE_FILES = (
     "assets/donations/originals/binance.png",
     "third_party/CPython-LICENSE.txt", "third_party/Pillow-LICENSE.txt", "third_party/Tk-LICENSE.txt",
 )
-PRIVATE_PARTS = {"data", "exports", "browser-profile", "backup", "backups", "diagnose", "qa", ".git", ".venv", "user-images"}
+PRIVATE_PARTS = {"data", "exports", "browser-profile", "backup", "backups", "diagnose", "qa", ".git", ".venv", "user-images", "fanart-cache"}
 PRIVATE_SUFFIXES = {".csv", ".xlsx", ".xls", ".sqlite", ".sqlite3", ".db", ".log", ".har", ".jsonl"}
 
 
@@ -39,7 +42,7 @@ def check_public_path(path: str):
     parts = Path(path).parts
     if any(part.lower() in PRIVATE_PARTS for part in parts) or Path(path).suffix.lower() in PRIVATE_SUFFIXES:
         raise ValueError(f"Private file category in release payload: {path}")
-    if Path(path).name.lower() in {"settings.json", "personal_seed.json", "cookies.json"}:
+    if Path(path).name.lower() in {"settings.json", "personal_seed.json", "cookies.json", "fanart.local.json"}:
         raise ValueError(f"Private settings in release payload: {path}")
 
 

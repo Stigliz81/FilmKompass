@@ -1,95 +1,38 @@
-<p align="center"><img src="assets/filmkompass.png" width="120" alt="FilmKompass Filmrollen-Icon"></p>
+# FilmKompass 1.1
 
-# FilmKompass 1.0
+**Deine Filme. Deine Bewertungen. Deine Filmlisten.** Kostenloser, quelloffener Windows-Filmmanager für öffentlich sichtbare Moviepilot-Bewertungen.
 
-**Deine Moviepilot-Bewertungen einfach herunterladen, verwalten und sichern.**
+## Download
 
-FilmKompass ist ein kostenloses Windows-Programm zum Herunterladen, Durchsuchen, Filtern und Exportieren deiner öffentlich sichtbaren Moviepilot-Bewertungen. Deine Filmbibliothek wird lokal auf deinem Computer gespeichert.
+- [Windows x64 – portables ZIP](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/FilmKompass-1.1-Windows-portabel.zip)
+- [Python-Quellcode](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/FilmKompass-1.1-Quellcode.zip)
+- [SHA-256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.1.0/SHA256SUMS.txt)
+- [Webseite](https://stigliz81.github.io/FilmKompass/) · [Releasehistorie einschließlich 1.0](https://github.com/Stigliz81/FilmKompass/releases)
 
-**Kostenlos · Windows (64-Bit) · Open Source**
+ZIP vollständig in einen beschreibbaren Ordner entpacken und FilmKompass.exe starten. Der komplette `_internal`-Ordner gehört dazu. Keine separate Python-Installation oder Administratorrechte erforderlich. EXE unsigniert; offizielle Quelle und Prüfsummen verwenden, Windows-Sicherheitsfunktionen eingeschaltet lassen.
 
-**[FilmKompass-Webseite mit weiteren Programmeinblicken](https://stigliz81.github.io/FilmKompass/)**
+## Funktionen
 
-## FilmKompass herunterladen
+- Film-/Serienbewertungen und vorhandenes Bewertungsdatum herunterladen, lokal durchsuchen, sortieren und filtern.
+- Unterstützte öffentliche Filmlisten separat speichern und mit der eigenen Bibliothek abgleichen. Empfehlungsabgleich für eingefügte Titel. Zugriffssperren werden respektiert; Katalogabrufe sind auf 200 Titel begrenzt.
+- Listenansicht und Miniaturen in Klein, Mittel und Groß; 15 Genreillustrationen als Ersatzmotive.
+- Optionale Fanart.tv-Coverautomatik mit persönlichem API Key, Pause/Fortsetzen und lokalem Cache. Eigene Bilder haben Vorrang. Keine echten Cover im Paket.
+- XLSX/CSV importieren und gesamte/gefilterte Bewertungen exportieren; Halbnoten bleiben Zahlen.
+- Statistik, lokale Sicherungen und kontrollierter Reset einschließlich Filmlisten. Vollständiges Appdatenlöschen erstellt vorher eine geprüfte externe Sicherung.
+- Direkte Moviepilot-Links, Kurzanleitung und freiwillige Versionsprüfung, standardmäßig aus. Keine automatische Updateinstallation.
 
-- **[FilmKompass 1.0 für Windows](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Windows-portabel.zip)**
-- [Python-Quellcode](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/FilmKompass-1.0-Quellcode.zip)
-- [SHA256-Prüfsummen](https://github.com/Stigliz81/FilmKompass/releases/download/v1.0.0/SHA256SUMS.txt)
+Keine Filme oder Videos werden heruntergeladen, keine Bibliotheken automatisch in Cloud-/KI-Dienste übertragen und keine Zugriffssperren umgangen. Ein freier Vergleich zweier beliebiger Listen ist nicht enthalten.
 
-Keine separate Python-Installation nötig. Die EXE ist derzeit unsigniert; nutze diese offizielle Bezugsquelle und prüfe die Prüfsummen. Windows-Sicherheitsfunktionen müssen dafür nicht pauschal deaktiviert werden. Windows 11 x64 ist getestet; Windows 10 x64 ist technisch plausibel, aber noch nicht praktisch getestet ([Systemdetails](docs/WINDOWS_KOMPATIBILITAET.md)).
+## Cover und persönliche Daten
 
-## So sieht FilmKompass aus
+Persönlichen API Key unter https://fanart.tv/get-an-api-key/ erhalten und in Einstellungen & Daten speichern/prüfen. Kein Project API Key für normale Nutzer erforderlich. Bestehende Entwicklerkonfiguration optional unterstützt. **Keine echten Schlüssel in Git oder Paketen.** Bilder über [fanart.tv](https://fanart.tv/), Zuordnung gegebenenfalls über Wikidata. Bildrechte beachten.
 
-![FilmKompass 1.0 – Bibliothek mit Filtern und Statistiken](docs/screenshots/filmkompass-1.0-library.png)
+Daten liegen standardmäßig unter `%LOCALAPPDATA%/MoviepilotManager`. SQLite-Sicherungen enthalten Bildzuordnungen; Bilder für einen Gerätewechsel zusätzlich sichern. Komplettsicherungen können private Keys enthalten: nicht veröffentlichen. Zwei Instanzen nicht auf dasselbe Profil richten.
 
-*FilmKompass 1.0 mit erfundenen Beispieldaten.*
+## Systeme und Hinweise
 
-## Das kann FilmKompass
+Windows 10/11 x64. Hauptfunktionen und korrigiertes Taskleistensymbol wurden vom Nutzer praktisch bestätigt. Keine erneute Windows-10-Prüfung des finalen Pakets behauptet. Persönlicher Fanart-Key allein technisch/simuliert geprüft; mangels persönlichem Testkey kein bestätigter Live-Test dieses Modus.
 
-- **Bewertungen herunterladen:** Öffentliche Film- und Serienbewertungen aus deinem Moviepilot-Profil abrufen.
-- **Bibliothek verwalten:** Titel durchsuchen und sortieren.
-- **Intelligent filtern:** Nach Erscheinungsjahr, Note, Bewertungsdatum, Genre und Film-/Serientyp.
-- **Excel und CSV:** Gesamte Bibliothek oder gefilterte Ergebnisse exportieren; vorhandene Dateien importieren.
-- **Statistiken:** Deinen Filmgeschmack anhand verschiedener Auswertungen betrachten.
-- **Miniaturansicht:** Titel alternativ als übersichtliche Karten anzeigen.
-- **Datensicherung:** Bewertungen und zusätzliche lokale Informationen sichern.
-- **Eigene Bilder:** Titelbilder bei Bedarf selbst hinzufügen.
+[Start und Sicherung](docs/V1.1_START.md) · [Fanart-Hinweise](docs/FANART.md) · [Datenschutz](docs/DATENSCHUTZ.md) · [MIT-Lizenz](LICENSE) · [Fremdlizenzen](THIRD_PARTY_NOTICES.md)
 
-## Installation und erster Start
-
-1. Windows-ZIP herunterladen und vollständig entpacken.
-2. `FilmKompass.exe` starten.
-3. **Von Moviepilot aktualisieren** anklicken und deinen Profilnamen oder Profillink eingeben.
-4. Bewertungen herunterladen, durchsuchen, filtern und bei Bedarf exportieren.
-
-**Wichtig:** `_internal` gehört zum Programm und muss neben der EXE bleiben. Keine Administratorrechte oder zusätzliche Python-Installation erforderlich.
-
-Eine neue Bibliothek startet leer. Vorhandene lokale Daten bleiben beim Start erhalten. Für den Moviepilot-Abruf benötigst du eine Internetverbindung.
-
-## Hinweis zu deinem Moviepilot-Profil
-
-Der Standarddownload benötigt öffentlich sichtbare Bewertungen. Aktiviere bei Bedarf vorübergehend **„Meine Bewertungen öffentlich zeigen“** in deinen Moviepilot-Profileinstellungen. Nach dem Download kannst du die Einstellung wieder deaktivieren.
-
-Während der Freigabe können auch andere deine Bewertungen sehen. FilmKompass lädt ausschließlich Bewertungsinformationen herunter, keine Filme oder Videos.
-
-## Deine Daten bleiben unter deiner Kontrolle
-
-Die Speicherung erfolgt lokal. Es gibt keine automatische Übertragung deiner Bibliothek an KI-Dienste und keine automatische Cloud-Synchronisation. Du entscheidest, ob du Daten exportierst oder weitergibst.
-
-Die SQLite-Datensicherung kann zusätzliche persönliche Informationen enthalten. Beim Gerätewechsel eigene Bilder separat mitsichern; Details stehen in der [Datenschutz- und Sicherungsanleitung](docs/DATENSCHUTZ.md).
-
-## Häufige Fragen
-
-**Kann ich Moviepilot-Bewertungen als Excel exportieren?**
-
-Ja. Der Moviepilot Excel Export nutzt XLSX; alternativ steht CSV bereit. Deine Noten und Bewertungsdaten bleiben als Zahlen und Datumswerte in Excel nutzbar.
-
-**Kann ich nur bestimmte Bewertungen exportieren?**
-
-Ja. Filtere deine Bibliothek und exportiere die gefilterten Ergebnisse.
-
-**Benötige ich einen Moviepilot-Login?**
-
-Nein. Öffentliche Profilbewertungen lassen sich ohne Browseranmeldung herunterladen.
-
-**Kann ich meine Moviepilot-Bewertungen sichern?**
-
-Ja, als Excel/CSV oder als vollständiges lokales Moviepilot-Backup in SQLite.
-
-**Kann ich öffentliche Moviepilot-Filmlisten herunterladen?**
-
-Version 1.0 unterstützt deine persönliche Bewertungsliste. Beliebige Bestenlisten und thematische Filmlisten werden noch nicht unterstützt.
-
-## Weitere Informationen
-
-- [Ausführliche Funktionen und Filtermöglichkeiten](docs/FUNKTIONEN.md)
-- [Datenschutz, Speicherung und Datensicherung](docs/DATENSCHUTZ.md)
-- [Python-Installation, Entwicklung und technische Grenzen](docs/TECHNIK.md)
-
-## Lizenz und Feedback
-
-[MIT-Lizenz](LICENSE) · Copyright (c) 2026 Stigliz81 · [Fremdlizenzen](THIRD_PARTY_NOTICES.md)
-
-Feedback und Verbesserungsvorschläge: **stigliz1981@gmail.com**
-
-**FilmKompass ist ein unabhängiges Projekt und nicht offiziell mit Moviepilot verbunden.**
+Unabhängiges Projekt, nicht offiziell mit Moviepilot verbunden. Copyright (c) 2026 Stigliz81. Projektunterstützung ist freiwillig; bestehende Zahlungswege stehen auf der Webseite.

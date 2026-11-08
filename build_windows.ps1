@@ -1,8 +1,8 @@
-param([string]$OutputRoot = "")
+param([string]$OutputRoot = "", [string]$WorkRoot = "")
 $ErrorActionPreference = "Stop"
 Set-Location -LiteralPath $PSScriptRoot
 foreach ($iconAsset in @('assets/filmkompass.ico','assets/filmkompass.png')) {
-  if (!(Test-Path -LiteralPath $iconAsset)) { throw "Verbindliches Filmrollen-Icon fehlt: $iconAsset. Kein Ersatzicon verwenden." }
+  if (!(Test-Path -LiteralPath $iconAsset)) { throw "Verbindliches Kompass-Icon fehlt: $iconAsset. Kein Ersatzicon verwenden." }
 }
 $builder = Join-Path $PSScriptRoot "qa/build-env/Scripts/python.exe"
 if (!(Test-Path -LiteralPath $builder)) {
@@ -19,6 +19,12 @@ if (!$OutputRoot) { $OutputRoot = "dist/AP12/$versionPath" }
 $target = Join-Path $OutputRoot $exeStem
 if (Test-Path -LiteralPath $target) { throw "Buildziel existiert bereits. Bestehenden Build erhalten; anderes OutputRoot verwenden." }
 $buildRoot = "build/AP12/$versionPath"
+$specRoot = "build/AP12"
+if ($WorkRoot) {
+  if (Test-Path -LiteralPath $WorkRoot) { throw "Test-Arbeitsordner existiert bereits. Eindeutigen WorkRoot verwenden." }
+  $buildRoot = $WorkRoot
+  $specRoot = Join-Path $buildRoot "spec"
+}
 $versionResource = "$buildRoot/windows_version_info.txt"
 & $builder app_info.py $versionResource
 if ($LASTEXITCODE -ne 0) { throw "Versionsressource fehlgeschlagen" }
@@ -26,6 +32,6 @@ $versionResource = (Resolve-Path -LiteralPath $versionResource).Path
 $assetArgs = @()
 $publicAssets = & $builder -c "from package_release import SOURCE_FILES; print('\n'.join(p for p in SOURCE_FILES if p.startswith('assets/')))"
 foreach ($asset in $publicAssets) { $destination = Split-Path -Parent $asset; $assetArgs += @('--add-data', "$PSScriptRoot/$asset;$destination") }
-& $builder -m PyInstaller --clean --windowed --onedir --name $exeStem --distpath $OutputRoot --workpath $buildRoot --specpath build/AP12 --icon "$PSScriptRoot/assets/filmkompass.ico" --version-file $versionResource @assetArgs --exclude-module playwright moviepilot_manager.py
+& $builder -m PyInstaller --clean --windowed --onedir --name $exeStem --distpath $OutputRoot --workpath $buildRoot --specpath $specRoot --icon "$PSScriptRoot/assets/filmkompass.ico" --version-file $versionResource @assetArgs --exclude-module playwright moviepilot_manager.py
 if ($LASTEXITCODE -ne 0) { throw "Build fehlgeschlagen" }
 Get-FileHash -Algorithm SHA256 (Join-Path $target "$exeStem.exe")

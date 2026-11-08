@@ -14,34 +14,58 @@ import queue
 import threading
 import subprocess
 from tkinter import simpledialog
-from app_info import APP_VERSION, APP_TITLE, PUBLIC_NAME, DISPLAY_VERSION, ICON_PNG, ICON_ICO, SUBTITLE, INDEPENDENCE_NOTICE
+from app_info import APP_VERSION, APP_TITLE, PUBLIC_NAME, DISPLAY_VERSION, ICON_PNG, ICON_ICO, SUBTITLE, INDEPENDENCE_NOTICE, APP_USER_MODEL_ID
 
 FEEDBACK_EMAIL="stigliz1981@gmail.com"
 FEEDBACK_MAILTO="mailto:"+FEEDBACK_EMAIL+"?subject="+quote(f"{PUBLIC_NAME} {APP_VERSION} – Feedback")
 from donation_assets import DONATIONS, PAYPAL_URL, qr_preview, copy_address
 from PIL import ImageTk, Image, ImageOps
 from catalog_view import FILTER_LABELS, filter_values, filter_rows, export_public, suggest_export_path, selection_caption, rating_year_counts, filter_display_values
-from compact_widgets import MultiSelect, GenreSelect, BarChart, QUICK_HELP, HELP_STEPS, HeadingTip, FilterControl, FILTER_LABEL_FONT, FILTER_LABEL_GAP
+from compact_widgets import MultiSelect, GenreSelect, BarChart, QUICK_HELP, HELP_STEPS, HeadingTip, FilterControl, FILTER_LABEL_FONT, FILTER_LABEL_GAP, scroll_wheel
 from header_backdrop import HeaderBackdrop, BACKGROUNDS, background_choice
+from table_links import TableLinks
+from program_updates import ProgramUpdates, WEBSITE
 from genre_art import ArtCache
 from user_images import UserImages, download_image
 from thumbnail_view import ThumbnailView
 
-from manager_core import Catalog, normalized_url, data_directory, compare_recommendations, display_date, rating_date
-from app_data import register_data_directory, managed_data_preview, delete_managed_data
 
-BASE = Path(__file__).resolve().parent
+def enable_dpi_awareness():
+    """Use Windows' native startup DPI, without overriding Tk/user scaling."""
+    if sys.platform=='win32':
+        import ctypes
+        try:ctypes.windll.shcore.SetProcessDpiAwareness(1)
+        except (AttributeError,OSError):
+            try:ctypes.windll.user32.SetProcessDPIAware()
+            except (AttributeError,OSError):pass
+
+from manager_core import Catalog, normalized_url, data_directory, compare_recommendations, display_date, rating_date
+from app_data import register_data_directory, managed_data_preview, delete_managed_data, verified_backup, backup_managed_data, automatic_backup_directory
+
+BASE = Path(getattr(sys, '_MEIPASS', Path(__file__).resolve().parent))
 COLORS = dict(bg="#0e141b", panel="#16212b", side="#1b2b36", field="#1e303b",
               ink="#edf6f6", muted="#93aeb6", accent="#49d6bd",
               accent2="#78bfcf", border="#29424d", danger="#efa3a3")
 FONT = ("Segoe UI", 10)
 
 
+def brand_image(size=(42,42)):
+    """Frozen bundles must use their own resources; a missing logo is non-fatal."""
+    for name in (ICON_PNG, ICON_ICO):
+        try:
+            with Image.open(BASE/name) as image:
+                return ImageTk.PhotoImage(image.convert('RGBA').resize(size,Image.Resampling.LANCZOS))
+        except (OSError,ValueError):
+            continue
+    return None
+
+
 def set_geometry(window, w=1360, h=810):
-    width = min(w, window.winfo_screenwidth() - 80)
-    height = min(h, window.winfo_screenheight() - 100)
-    window.geometry(f"{width}x{height}+30+30")
-    window.minsize(min(980, width), min(580, height))
+    left, top, right, bottom = monitor_work_area(window)
+    width = min(w, right-left-40)
+    height = min(h, bottom-top-60)
+    window.geometry(f"{width}x{height}{left+20:+d}{top+20:+d}")
+    window.minsize(min(900, width), min(440, height))
 
 
 def monitor_work_area(window):
@@ -83,13 +107,40 @@ class ScrollPanel(ttk.Frame):
         def bind(widget):
             if not getattr(widget,'_moviepilot_wheel_bound',False):
                 def wheel(event):
-                    self.canvas.yview_scroll(-int(event.delta / 120),'units')
-                    return 'break'
+                    if isinstance(event.widget, (ttk.Treeview, tk.Text, tk.Listbox, ttk.Combobox)):
+                        if not event.state & 1:
+                            if isinstance(event.widget,ttk.Combobox):return
+                            first,last=event.widget.yview()
+                            if not ((event.delta>0 and first<=0) or (event.delta<0 and last>=1)):
+                                return scroll_wheel(event.widget,event.delta)
+                    return scroll_wheel(self.canvas,event.delta)
                 widget.bind("<MouseWheel>",wheel,add="+")
                 widget._moviepilot_wheel_bound=True
             for child in widget.winfo_children():
                 bind(child)
         bind(self)
+        self.canvas.configure(takefocus=True)
+        self.canvas.bind('<Next>', lambda e: self.canvas.yview_scroll(1, 'pages'))
+        self.canvas.bind('<Prior>', lambda e: self.canvas.yview_scroll(-1, 'pages'))
+
+
+class TabScrollPanel(ScrollPanel):
+    """One outer scroll region for all tab content, with bounded result scrolling."""
+    def __init__(self,parent):
+        super().__init__(parent,padding=(0,0))
+        self.result=None
+        self.canvas.bind('<Configure>',self._fit_result,add='+')
+
+    def attach_result(self,result):
+        self.result=result
+        self.after_idle(self._fit_result)
+
+    def _fit_result(self,event=None):
+        if self.result is not None:
+            self.result.configure(height=max(280,self.canvas.winfo_height()-8))
+
+    def reveal_results(self):
+        self.after_idle(lambda:(self.canvas.configure(scrollregion=self.canvas.bbox('all')),self.canvas.yview_moveto(1)))
 
 
 PUBLIC_PROFILE_HINT="Für den Download müssen deine Bewertungen auf Moviepilot öffentlich sichtbar sein. Aktiviere dazu bei Bedarf in deinen Profileinstellungen ‚Meine Bewertungen öffentlich zeigen‘. Nach dem Download kannst du deine Bewertungen wieder auf privat stellen."
@@ -117,14 +168,24 @@ class ProfileDialog(simpledialog.Dialog):
 
 
 class Manager(tk.Tk):
+    scroll_panel_class = ScrollPanel
+    tab_scroll_class = TabScrollPanel
     def __init__(self):
+        enable_dpi_awareness()
+        if sys.platform == "win32":
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_USER_MODEL_ID)
         super().__init__()
+        if sys.platform=="win32" and getattr(sys,"frozen",False):self.withdraw()
         self.title(APP_TITLE)
         set_geometry(self)
         self.configure(bg=COLORS["bg"])
         if sys.platform == "win32":
-            self.iconbitmap(str(BASE / ICON_ICO))
-            self.iconbitmap(default=str(BASE / ICON_ICO))
+            try:
+                self.iconbitmap(str(BASE / ICON_ICO))
+                self.iconbitmap(default=str(BASE / ICON_ICO))
+            except tk.TclError:
+                pass
         self._setup_styles()
         self.db = Catalog(data_directory() / "manager.sqlite")
         register_data_directory(self.db.db_path.parent)
@@ -139,16 +200,90 @@ class Manager(tk.Tk):
         self._last_clicked_column = None
         self.settings = self.load_settings()
         self.images=UserImages(self.db)
-        self.art=ArtCache(BASE / "assets/genres",self.images)
+        from fanart_view import FanartController
+        self.covers=FanartController(self,BASE)
+        self.art=ArtCache(BASE / "assets/genres",self.images,online_store=self.covers.cache)
         self._list_photo_refs={}
         self._list_job=None
         self.genre_mode="or";self.excluded_genres=set()
         self.filters = {key:set() for key in FILTER_LABELS}
         self._build_window()
+        for cls in ('TEntry', 'Entry', 'Text'):
+            self.bind_class(cls, '<Button-3>', self._text_context, add='+')
+            self.bind_class(cls, '<Control-a>', self._select_all_text)
+        self.bind('<Configure>', self._compact_height, add='+')
         self.refresh_all()
         self.bind("<Control-f>", lambda e: self.focus_search())
         self.bind("<F5>", lambda e: self.refresh_all())
         self.protocol("WM_DELETE_WINDOW", self.close)
+        if sys.platform=='win32' and getattr(sys,'frozen',False):
+            def shell_identity(event=None):
+                if event is not None and event.widget is not self:return
+                try:
+                    from windows_taskbar import configure_shell
+                    configure_shell(self,sys.executable,BASE/ICON_ICO,APP_USER_MODEL_ID)
+                except (OSError,AttributeError):
+                    pass  # Retain working Tk/process icons if the optional shell API fails.
+            self.bind('<Map>',shell_identity,add='+')
+            self.update_idletasks()  # Create the native wrapper while still withdrawn.
+            self._shell_initialization={'before_shell_state':self.state(),'mapped':bool(self.winfo_ismapped())}
+            shell_identity()
+            self._shell_initialization['configured']=bool(getattr(self,'_shell_identity_hwnd',None))
+            self.deiconify()
+
+    def _select_all_text(self, event):
+        widget = event.widget
+        if isinstance(widget, tk.Text):
+            widget.tag_add('sel', '1.0', 'end-1c')
+        else:
+            widget.selection_range(0, 'end')
+        return 'break'
+
+    def _text_context(self, event):
+        event.widget.focus_set()
+        menu = tk.Menu(self, tearoff=False)
+        for label, action in (('Ausschneiden','<<Cut>>'),('Kopieren','<<Copy>>'),('Einfügen','<<Paste>>')):
+            menu.add_command(label=label, command=lambda a=action: event.widget.event_generate(a))
+        menu.add_separator()
+        menu.add_command(label='Alles markieren', command=lambda: self._select_all_text(event))
+        try:
+            menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            menu.grab_release()
+        return 'break'
+
+    def _compact_height(self, event):
+        if event.widget is not self:
+            return
+        compact = self.winfo_height() < 740
+        if getattr(self.header, 'compact', False) != compact:
+            self.header.compact = compact
+            self.draw_product_title(self.header.winfo_width())
+            self.header.schedule()
+
+    def prepare_split(self, split, small, large):
+        pending=None
+        initialized=False
+        def constrain():
+            nonlocal pending,initialized
+            pending=None
+            if not split.winfo_exists() or not split.winfo_ismapped() or split.winfo_height()<10:return
+            # ttk.Panedwindow has no pane minsize. Bound its sash, including after
+            # child Unmap/Configure, instead of redrawing an invisible gallery.
+            minimum=max(180,round(float(self.tk.call('tk','scaling'))*150))
+            maximum=max(0,split.winfo_height()-minimum-8)
+            position=split.sashpos(0) if initialized else (small if self.winfo_height()<740 else large())
+            target=min(maximum,max(0,position))
+            if split.sashpos(0)!=target:split.sashpos(0,target)
+            initialized=True
+        def schedule(event=None):
+            nonlocal pending
+            if pending is None and split.winfo_exists():pending=split.after_idle(constrain)
+        for sequence in ('<Map>','<Configure>','<B1-Motion>','<ButtonRelease-1>'):
+            split.bind(sequence,schedule,add='+')
+        result=self.nametowidget(split.panes()[-1])
+        for sequence in ('<Configure>','<Map>','<Unmap>'):
+            result.bind(sequence,schedule,add='+')
 
     def _setup_styles(self):
         style=ttk.Style(self)
@@ -220,54 +355,82 @@ class Manager(tk.Tk):
             style.map(name,background=[("active", "#39616b"), ("pressed", "#39616b")])
         style.configure("Horizontal.TProgressbar", background=COLORS["accent"], troughcolor=COLORS["field"], borderwidth=0, thickness=5)
 
+        style.configure('TButton',padding=(12,7))
+        style.configure('Accent.TButton',padding=(12,7))
+        style.configure('TNotebook.Tab',padding=(12,8),font=('Segoe UI Semibold',10))
+        style.map('TNotebook.Tab',background=[('selected','#49d6bd'),('active','#2e4e5c'),('!selected','#1b2b36')],
+                  foreground=[('selected','#0b2025'),('active','#ffffff'),('!selected','#cfdee1')],
+                  padding=[('selected',(12,8))],bordercolor=[('selected','#e4bd72'),('!selected',COLORS['border'])])
+        style.configure('Treeview',rowheight=max(32,round(float(self.tk.call('tk','scaling'))*16)))
+        style.configure('Treeview.Heading',foreground=COLORS['ink'],padding=(8,8))
+        for orient in ('Vertical','Horizontal'):
+            style.configure(f'{orient}.TScrollbar',background='#4e8190',width=18)
+            style.map(f'{orient}.TScrollbar',background=[('active','#6caabb'),('pressed','#49d6bd'),('!active','#4e8190')])
+        style.configure('TButton',padding=(10,5),borderwidth=1,relief='raised',
+                        bordercolor='#3a5364',lightcolor='#3b5265',darkcolor='#0a111b')
+        style.map('TButton',background=[('disabled','#18232a'),('pressed','#193443'),('active','#304c60')],
+                  bordercolor=[('focus','#e4bd72'),('active','#71b9c6'),('!focus','#3a5364')])
+        style.configure('Accent.TButton',padding=(10,5),borderwidth=1,relief='raised',
+                        lightcolor='#459481',darkcolor='#102f29',bordercolor='#4f9f8c')
+        style.configure('Compact.TButton',padding=(8,3),font=('Segoe UI',9))
+        style.configure('CompactAccent.TButton',padding=(8,3),font=('Segoe UI Semibold',9),
+                        background='#266952',foreground='#ffffff',bordercolor='#4f9f8c')
+        style.map('CompactAccent.TButton',background=[('active','#328b76'),('disabled','#1b3936')])
+        for name in ('TEntry','TCombobox'):
+            style.configure(name,borderwidth=1,relief='sunken',lightcolor='#0b131e',darkcolor='#3b5265')
+            style.map(name,bordercolor=[('focus','#e4bd72'),('!focus','#3a5364')])
+
     def _build_window(self):
         tk.Frame(self,bg=COLORS["accent"],height=3).pack(fill="x")
         header=HeaderBackdrop(self,BASE / "assets/backgrounds",COLORS,self.settings.get("background"))
         self.header=header;header.pack(fill="x")
         left=ttk.Frame(header)
         header.attach("brand",left)
-        with Image.open(BASE / ICON_PNG) as icon:
-            self.header_icon=ImageTk.PhotoImage(icon.resize((42,42),Image.Resampling.LANCZOS))
-        ttk.Label(left,image=self.header_icon).pack(side="left",padx=(0,12))
+        factor=float(self.tk.call('tk','scaling'))/(96/72)
+        self.header_icon=brand_image((round(36*factor),round(36*factor)))
+        if self.header_icon:
+            ttk.Label(left,image=self.header_icon).pack(side="left",padx=(0,12))
         brand=ttk.Frame(left)
         brand.pack(side="left",fill="x",expand=True)
         self.brand_title=tk.Canvas(brand,bg=COLORS['bg'],highlightthickness=0)
         self.brand_title.pack(anchor='w')
-        self.brand_subtitle=ttk.Label(brand,text=SUBTITLE,style='Muted.TLabel',wraplength=700)
-        self.brand_subtitle.pack(anchor='w',pady=(1,0))
+        self.brand_subtitle=ttk.Label(header,text=SUBTITLE,style='Muted.TLabel',font=('Segoe UI',9),wraplength=700)
+        header.attach('description',self.brand_subtitle)
 
         support=ttk.Frame(header);header.attach("support",support)
-        ttk.Button(support,text="♥ Unterstützen",command=self.show_donations).pack(side="right",padx=4)
-        ttk.Button(support,text="Kurzanleitung",command=self.show_help).pack(side="right",padx=4)
+        ttk.Button(support,text="♥ Unterstützen",command=self.show_donations,style='Compact.TButton').pack(side='left',anchor='n',padx=4)
+        self.website_button=ttk.Button(support,text='🌐 Webseite',command=self.open_website,style='Compact.TButton')
+        self.website_button.pack(side='left',anchor='n',padx=4)
+        help_box=ttk.Frame(support);help_box.pack(side='right')
+        ttk.Button(help_box,text="Kurzanleitung",command=self.show_help,style='Compact.TButton').pack(anchor='e')
+        self.version_label=ttk.Label(help_box,text='Version '+DISPLAY_VERSION,style='Muted.TLabel',font=('Segoe UI',8))
+        self.version_label.pack(anchor='e',pady=(1,0))
         self._brand_support=support
         header.bind('<Configure>',lambda e:self.draw_product_title(e.width),add='+')
         self.after_idle(lambda:self.draw_product_title(header.winfo_width()))
         right=ttk.Frame(header)
         header.attach("actions",right)
-        self.export_button=ttk.Button(right,text="Von Moviepilot aktualisieren",command=self.start_browser_export,style="Accent.TButton")
-        self.export_button.pack(side="left",padx=4)
-        self.import_button=ttk.Button(right,text="Datei importieren",command=self.import_dialog)
-        self.import_button.pack(side="left",padx=4)
-        self.backup_button=ttk.Button(right,text="Sicherung",command=self.backup)
-        self.backup_button.pack(side="left",padx=4)
-        self.file_export_button=ttk.Button(right,text="Filmdatenbank exportieren",command=self.export_dialog)
-        self.file_export_button.pack(side="left",padx=4)
+        self.export_button=ttk.Button(right,text="Von Moviepilot aktualisieren",command=self.start_browser_export,style="CompactAccent.TButton")
+        self.import_button=ttk.Button(right,text="Datei importieren",command=self.import_dialog,style='Compact.TButton')
+        self.backup_button=ttk.Button(right,text="Sicherung",command=self.backup,style='Compact.TButton')
+        self.file_export_button=ttk.Button(right,text="Filmdatenbank exportieren",command=self.export_dialog,style='Compact.TButton')
+        right.buttons=(self.export_button,self.import_button,self.backup_button,self.file_export_button)
+        for i,button in enumerate(right.buttons):button.grid(row=0,column=i,padx=(0,6),pady=1,sticky='w')
 
         self.count_labels=[]
         for i,label in enumerate(("Filme","Serien","Gesamt","Ø Note > 0")):
             pane=tk.Frame(header,bg=COLORS["panel"],highlightbackground=COLORS["border"],highlightthickness=1)
             header.attach(f"card{i}",pane)
             tk.Frame(pane,bg=COLORS["accent"] if i<3 else COLORS["accent2"],width=3).pack(side="left",fill="y")
-            number=tk.Label(pane,text="—",bg=COLORS["panel"],fg=COLORS["accent"],font=("Segoe UI Semibold",18))
-            number.pack(side="left",padx=(15,10),pady=10)
-            tk.Label(pane,text=label,bg=COLORS["panel"],fg=COLORS["muted"],font=("Segoe UI Semibold",10)).pack(side="left",padx=(0,15))
+            number=tk.Label(pane,text="—",bg=COLORS["panel"],fg=COLORS["accent"],font=("Segoe UI Semibold",13))
+            number.pack(side="left",padx=(10,7),pady=3)
+            tk.Label(pane,text=label,bg=COLORS["panel"],fg=COLORS["muted"],font=("Segoe UI",9)).pack(side="left",padx=(0,10))
             self.count_labels.append(number)
 
-        compact=ttk.Frame(self,padding=(22,0,22,6))
-        compact.pack(fill="x")
-        self.more_button=ttk.Button(compact,text="Mehr Statistiken  ▾",command=self.toggle_statistics)
+        compact=ttk.Frame(header)
+        header.attach('details',compact)
+        self.more_button=ttk.Button(compact,text="Mehr Statistiken  ▾",command=self.toggle_statistics,style='Compact.TButton')
         self.more_button.pack(side="left")
-        ttk.Label(compact,text="Gesamte Bibliothek",style="Muted.TLabel").pack(side="right")
         self.short_stats=ttk.Label(self,style="Muted.TLabel",wraplength=880)
 
         self.statusbar=tk.StringVar(value="Bereit.")
@@ -289,35 +452,98 @@ class Manager(tk.Tk):
         self._build_reco()
         self._build_changes()
         self._build_data_settings()
+        from movie_lists_view import MovieListsView
+        self.movie_lists = MovieListsView(self.tabs, self)
+        self.tabs.add(self.movie_lists, text='Filmlisten')
+        self.tabs.insert(1,self.movie_lists)
+        self.tabs.insert(3,self.page_stats)
         self.progress_frame=ttk.Frame(self,padding=(22,8))
+        self.progress_content=ttk.Frame(self.progress_frame)
+        self.progress_content.pack(anchor='w');self.progress_content.pack_propagate(False)
+        def fit_progress(event):
+            factor=float(self.tk.call('tk','scaling'))/(96/72)
+            width=max(120,min(event.width-44,round(800*factor)))
+            self.progress_content.configure(width=width,height=max(42,round(42*factor)))
+            self.progress_label.configure(wraplength=max(100,width-self.progress_cancel.winfo_reqwidth()-20))
+        self.progress_frame.bind('<Configure>',fit_progress,add='+')
         self.progress_text=tk.StringVar(value="")
-        ttk.Label(self.progress_frame,textvariable=self.progress_text,style="Accent.TLabel").pack(anchor="w",pady=(0,6))
-        self.progress_bar=ttk.Progressbar(self.progress_frame,mode="indeterminate")
+        self.progress_label=ttk.Label(self.progress_content,textvariable=self.progress_text,style="Accent.TLabel")
+        self.progress_label.pack(anchor="w",pady=(0,6))
+        self.progress_cancel=ttk.Button(self.progress_content,text='Abbrechen')
+        self.progress_bar=ttk.Progressbar(self.progress_content,mode="indeterminate")
         self.progress_bar.pack(fill="x")
+        self.cover_main_frame=ttk.Frame(self,padding=(22,3))
+        content=ttk.Frame(self.cover_main_frame);content.pack(anchor='w');content.pack_propagate(False)
+        self.cover_main_text=tk.StringVar(value='')
+        cover_label=ttk.Label(content,textvariable=self.cover_main_text,style='Accent.TLabel');cover_label.pack(anchor='w')
+        self.cover_main_action=ttk.Button(content,text='Pausieren',command=self.covers.pause_batch)
+        self.cover_main_action.pack(side='right',padx=(8,0))
+        self.cover_main_bar=ttk.Progressbar(content,maximum=100,variable=self.covers.progress_value)
+        self.cover_main_bar.pack(fill='x')
+        def fit_cover(event):
+            factor=float(self.tk.call('tk','scaling'))/(96/72)
+            width=max(120,min(event.width-44,round(800*factor)))
+            content.configure(width=width,height=max(40,round(40*factor)))
+            cover_label.configure(wraplength=max(100,width-self.cover_main_action.winfo_reqwidth()-20))
+        self.cover_main_frame.bind('<Configure>',fit_cover,add='+')
         self._poll_job=self.after(250,self._poll_export)
+        self.tabs.bind('<<NotebookTabChanged>>',self._sync_cover_progress,add='+')
+
+    def _sync_cover_progress(self,event=None):
+        if not hasattr(self,'cover_main_frame'):return
+        if self.covers.batch_running or self.covers.auto_state in ('paused','cancelled','error') and self.covers.cache.enabled:
+            if self.tabs.select()==str(self.page_data):self.cover_main_frame.pack_forget()
+            else:self.cover_main_frame.pack(side='bottom',fill='x',before=self.tabs)
+        else:self.cover_main_frame.pack_forget()
 
     def draw_product_title(self,width):
-        available=max(250,width-44-66-self._brand_support.winfo_reqwidth())
+        available=max(250,width-44-66)
         parts=[(PUBLIC_NAME,False)]
-        for size in range(23,11,-1):
+        for size in range(20,11,-1):
             normal=tkfont.Font(family='Segoe UI',size=size)
             bold=tkfont.Font(family='Segoe UI',size=size,weight='bold')
             small=tkfont.Font(family='Segoe UI',size=max(10,size-7))
-            total=sum((bold if strong else normal).measure(text) for text,strong in parts)+small.measure('  '+DISPLAY_VERSION)
+            total=sum((bold if strong else normal).measure(text) for text,strong in parts)
             if total<=available:break
         self._brand_fonts=(normal,bold,small)
         baseline=max(normal.metrics('ascent'),bold.metrics('ascent'))+2
         height=baseline+max(normal.metrics('descent'),bold.metrics('descent'))+3
         self.brand_title.configure(width=total,height=height)
         self.brand_title.delete('all');x=0
-        for text,strong in parts+[("  "+DISPLAY_VERSION,None)]:
+        for text,strong in parts:
             font=small if strong is None else bold if strong else normal
             self.brand_title.create_text(x,baseline-font.metrics('ascent'),text=text,font=font,fill=COLORS['ink'],anchor='nw')
             x+=font.measure(text)
         self.brand_subtitle.configure(wraplength=max(250,available))
 
     def _build_library(self):
-        page=self.page_library
+        toolbar=ttk.Frame(self.page_library,padding=(0,5))
+        toolbar.pack(fill='x')
+        self.filters_hidden=bool(self.settings.get('filters_hidden',False))
+        self.filter_toggle=ttk.Button(toolbar,command=self.toggle_filters,style='ActiveFilter.TButton')
+        self.filter_toggle.pack(side='left')
+        self.filter_activity=ttk.Label(toolbar,style='Accent.TLabel');self.filter_activity.pack(side='left',padx=12)
+        self.mini_controls=ttk.Frame(toolbar)
+        ttk.Label(self.mini_controls,text='Miniaturen').pack(side='left',padx=(0,5))
+        from thumbnail_view import CARD_SIZES
+        saved=self.settings.get('thumbnail_size','Mittel')
+        self.thumbnail_size=tk.StringVar(value=saved if saved in CARD_SIZES else 'Mittel')
+        self.thumbnail_picker=ttk.Combobox(self.mini_controls,textvariable=self.thumbnail_size,values=list(CARD_SIZES),state='readonly',width=7)
+        self.thumbnail_picker.pack(side='left');self.thumbnail_picker.bind('<<ComboboxSelected>>',lambda e:self.change_thumbnail_size())
+        self.library_scroll=TabScrollPanel(self.page_library)
+        self.library_scroll.pack(fill='both',expand=True)
+        body=self.library_scroll.body
+        controls=ttk.Frame(body);controls.pack(fill='x')
+        self.library_controls=controls
+        self.library_split=ttk.Panedwindow(body,orient='vertical')
+        self.library_split.pack(fill='both',expand=True)
+        info=ttk.Frame(self.library_split)
+        self.library_split.add(info,weight=0)
+        result=ttk.Frame(self.library_split)
+        self.library_split.add(result,weight=1)
+        page=controls
+        self.library_scroll.attach_result(self.library_split)
+        self.prepare_split(self.library_split,30,lambda:30)
         self.filter_bar=ttk.Frame(page,padding=(0,8,0,4))
         self.filter_bar.pack(fill='x')
         self.filter_lines=[ttk.Frame(self.filter_bar),ttk.Frame(self.filter_bar)]
@@ -345,13 +571,14 @@ class Manager(tk.Tk):
         self._filter_layout=None
         self.filter_bar.bind('<Configure>',lambda e:self.layout_filters(e.width))
         self.after_idle(lambda:self.layout_filters(self.filter_bar.winfo_width()))
-        self.rows_label=ttk.Label(page,foreground=COLORS["accent"],font=("Segoe UI Semibold",12))
+        self.rows_label=ttk.Label(info,foreground=COLORS["accent"],font=("Segoe UI Semibold",11))
         self.rows_label.pack(fill="x",pady=(5,6))
         self.rows_label.bind("<Configure>",lambda e:self.rows_label.configure(wraplength=max(250,e.width)))
         self.empty_hint=ttk.Frame(page,style="Panel.TFrame",padding=12)
         ttk.Label(self.empty_hint,text="Noch keine Titel. Mit einem öffentlichen Moviepilot-Profillink starten oder CSV / XLSX importieren.",style="Card.TLabel",wraplength=800).pack(anchor="w")
         ttk.Button(self.empty_hint,text="Moviepilot-Profillink eingeben",command=self.start_browser_export).pack(anchor="w",pady=(6,0))
         views=ttk.Frame(page,padding=(0,2,0,6));views.pack(fill="x")
+        self.rows_controls=views
         self.view_choice=tk.StringVar(value=self.settings.get('view','Listenansicht') if self.settings.get('view') in ('Listenansicht','Miniaturansicht') else 'Listenansicht')
         self.view_buttons=[]
         for label in ('Listenansicht','Miniaturansicht'):
@@ -360,14 +587,22 @@ class Manager(tk.Tk):
         ttk.Label(views,text='Pro Seite').pack(side='left',padx=(5,4))
         saved_size=self.settings.get('page_size',12)
         self.page_size=tk.StringVar(value=str(saved_size if saved_size in (6,12,18,24) else 12))
-        size=ttk.Combobox(views,textvariable=self.page_size,values=(6,12,18,24),state='readonly',width=3)
+        self.list_size=tk.StringVar(value=str(self.settings.get('list_size',100)) if str(self.settings.get('list_size',100)) in ('24','50','100','Alle') else '100')
+        self.list_number=1
+        size=ttk.Combobox(views,textvariable=self.list_size,values=(24,50,100,'Alle'),state='readonly',width=5)
+        self.size_picker=size
         size.pack(side='left');size.bind('<<ComboboxSelected>>',lambda e:self.change_page_size())
         ttk.Label(views,text='Sortieren').pack(side='left',padx=(15,4))
         self.sort_choice=tk.StringVar()
         sorting=ttk.Combobox(views,textvariable=self.sort_choice,values=['Film/Serie','Titel','Jahr','Note','Bewertet am','Genre'],state='readonly',width=12)
         sorting.pack(side='left');sorting.bind('<<ComboboxSelected>>',lambda e:self.choose_sort())
         self.sort_direction=ttk.Button(views,text='↓',width=2,command=self.reverse_sort);self.sort_direction.pack(side='left',padx=4)
-        self.library_area=ttk.Frame(page)
+        self.library_nav=ttk.Frame(result,padding=(0,5));self.library_nav.pack(side='bottom',fill='x')
+        nav=ttk.Frame(self.library_nav);nav.pack()
+        self.page_previous=ttk.Button(nav,text='‹ Zurück',command=lambda:self.turn_library(-1));self.page_previous.pack(side='left')
+        self.page_caption=ttk.Label(nav,anchor='center',width=22);self.page_caption.pack(side='left',padx=8)
+        self.page_next=ttk.Button(nav,text='Weiter ›',command=lambda:self.turn_library(1));self.page_next.pack(side='left')
+        self.library_area=ttk.Frame(result)
         self.library_area.pack(fill="both",expand=True)
         self.listing=ttk.Frame(self.library_area)
         self.listing.pack(fill="both",expand=True)
@@ -408,9 +643,32 @@ class Manager(tk.Tk):
         self.tree.bind("<ButtonRelease-1>",lambda e:self.save_columns())
         self.tree.bind('<Button-3>',self.list_context)
         self.title_hint=HeadingTip(self.tree,COLORS)
-        self.gallery=ThumbnailView(self.library_area,self.art,COLORS,self.open_moviepilot,self.image_context)
+        self.gallery=ThumbnailView(self.library_area,self.art,COLORS,self.open_moviepilot,self.image_context,navigation=False,outer_scroll=self.library_scroll.canvas)
         self.gallery.size=int(self.page_size.get())
+        self.gallery.card_size=self.thumbnail_size.get()
         self.apply_view()
+        self._apply_filter_visibility()
+
+    def _apply_filter_visibility(self):
+        self.filter_toggle.configure(text='▾ Filter anzeigen' if self.filters_hidden else '▴ Filter ausblenden')
+        if self.filters_hidden:
+            self.filter_bar.pack_forget()
+        else:
+            self.filter_bar.pack(fill='x',before=self.rows_controls)
+
+    def toggle_filters(self):
+        self.filters_hidden=not self.filters_hidden
+        self.settings['filters_hidden']=self.filters_hidden;self.save_settings()
+        self._apply_filter_visibility()
+        if self.filters_hidden:self.library_scroll.reveal_results()
+        else:self.library_scroll.canvas.yview_moveto(0)
+
+    def turn_library(self,delta):
+        if self.view_choice.get()=='Listenansicht':self.list_number=max(1,self.list_number+delta)
+        else:self.gallery.number+=delta
+        self.refresh_list(reset_page=False)
+        self.gallery.canvas.yview_moveto(0)
+        self.library_scroll.reveal_results()
 
 
 
@@ -435,7 +693,8 @@ class Manager(tk.Tk):
         if self._filter_layout==columns:return
         self._filter_layout=columns
         filters.pack(fill='x',pady=(4,0))
-        search.columnconfigure(0,weight=1)
+        factor=float(self.tk.call('tk','scaling'))/(96/72)
+        search.columnconfigure(0,weight=0,minsize=min(round(900*factor),max(120,width-self.filter_groups[-1].winfo_reqwidth()-20)))
         self.filter_groups[1].grid(in_=search,row=0,column=0,sticky='nsew',padx=(0,12))
         self.filter_groups[-1].grid(in_=search,row=0,column=1,sticky='se')
         for group in self.filter_columns:group.grid_forget()
@@ -462,7 +721,15 @@ class Manager(tk.Tk):
         self.rating_year_missing.pack(anchor="w")
 
     def _build_reco(self):
-        page=self.page_reco
+        self.reco_scroll=TabScrollPanel(self.page_reco);self.reco_scroll.pack(fill='both',expand=True)
+        body=self.reco_scroll.body
+        page=ttk.Frame(body);page.pack(fill='x')
+        self.reco_controls=page
+        split=ttk.Panedwindow(body,orient='vertical')
+        split.pack(fill='both',expand=True)
+        info=ttk.Frame(split);split.add(info,weight=0)
+        ttk.Label(info,text='Ergebnisse des Abgleichs',style='Accent.TLabel').pack(anchor='w',pady=4)
+        self.reco_scroll.attach_result(split)
         bar=ttk.Frame(page,padding=(12,12))
         bar.pack(fill="x")
         ttk.Label(bar,text="Filmtitel / Serientitel einfügen (ein Titel pro Zeile). Bereits bewertete Titel wiederfinden.",style="Muted.TLabel").pack(anchor="w",pady=(0,8))
@@ -470,16 +737,20 @@ class Manager(tk.Tk):
         self.reco_input.pack(fill="x",pady=(0,8))
         ttk.Button(bar,text="Mit meiner Moviepilot-Liste abgleichen",style="Accent.TButton",command=self.match_recommendations).pack(anchor="e")
         columns=("input","result","existing","rating")
-        self.reco_tree=ttk.Treeview(page,columns=columns,show="headings")
+        result=ttk.Frame(split);split.add(result,weight=1)
+        self.reco_tree=ttk.Treeview(result,columns=columns,show="headings")
         for col,title,width in (("input","Gesuchter Titel",225),("result","Abgleich",190),("existing","Titel in der Liste",330),("rating","Note",65)):
             self.reco_tree.heading(col,text=title)
             self.reco_tree.column(col,width=width,stretch=col in ("input","existing"))
         self.reco_tree.tag_configure("possible",foreground="#f4d28a")
-        self.reco_tree.pack(fill="both",expand=True,padx=12,pady=(0,12))
-        self.reco_tree.bind("<Double-1>",self.open_recommendation)
+        self._scroll_table(self.reco_tree,result)
+        self.prepare_split(split,30,lambda:30)
+        self.reco_tree.heading("existing",text="Titel in der Liste ↗")
+        self.reco_links=TableLinks(self.reco_tree,("existing",),lambda iid:getattr(self,"current_reco_links",{}).get(iid),self.open_moviepilot)
 
     def _build_changes(self):
-        page=self.page_updates
+        scroll=TabScrollPanel(self.page_updates);scroll.pack(fill='both',expand=True)
+        page=scroll.body
         tools=ttk.Frame(page,padding=(10,10,10,0))
         tools.pack(fill="x")
         ttk.Button(tools,text="Vorhandenen Exporter starten …",command=self.launch_legacy_exporter).pack(side="left",padx=(0,8))
@@ -487,11 +758,21 @@ class Manager(tk.Tk):
         self.last_import_label=ttk.Label(page,text="",style="Muted.TLabel")
         self.last_import_label.pack(anchor="w",padx=10,pady=(15,8))
         columns=("time","change","title","details")
-        self.changes_tree=ttk.Treeview(page,columns=columns,show="headings")
+        result=ttk.Frame(page);result.pack(fill='both',expand=True)
+        result.pack_propagate(False);scroll.attach_result(result)
+        self.changes_tree=ttk.Treeview(result,columns=columns,show="headings")
         for col,label,width in (("time","Datum",160),("change","Art",130),("title","Titel",275),("details","Details",580)):
             self.changes_tree.heading(col,text=label)
             self.changes_tree.column(col,width=width,stretch=col in ("title","details"))
-        self.changes_tree.pack(fill="both",expand=True,padx=10,pady=(0,12))
+        self._scroll_table(self.changes_tree,result)
+
+    def _scroll_table(self, tree, frame):
+        frame.columnconfigure(0,weight=1);frame.rowconfigure(0,weight=1)
+        tree.grid(row=0,column=0,sticky='nsew')
+        vertical=ttk.Scrollbar(frame,orient='vertical',command=tree.yview)
+        horizontal=ttk.Scrollbar(frame,orient='horizontal',command=tree.xview)
+        vertical.grid(row=0,column=1,sticky='ns');horizontal.grid(row=1,column=0,sticky='ew')
+        tree.configure(yscrollcommand=vertical.set,xscrollcommand=horizontal.set)
 
     def _schedule_filter(self):
         if hasattr(self,"_filter_job") and self._filter_job:
@@ -508,9 +789,12 @@ class Manager(tk.Tk):
         self.data_status=tk.StringVar()
         labels=[]
         labels.append(ttk.Label(body,textvariable=self.data_status,style="Card.TLabel",wraplength=750))
-        labels[-1].pack(anchor="w",pady=(0,20))
+        labels[-1].pack(anchor="w",pady=(0,12))
         labels.append(ttk.Label(body,text="Python-Version und portable EXE verwenden standardmäßig denselben lokalen Datenordner. Eine vorhandene Bibliothek wird daraus geladen; es gibt keinen automatischen Beispieldaten- oder Backupimport.",style="Card.TLabel",wraplength=750))
-        labels[-1].pack(anchor="w",pady=(0,20))
+        labels[-1].pack(anchor="w",pady=(0,12))
+        ttk.Button(body,text="🌐 Offizielle FilmKompass-Webseite ↗",command=self.open_website).pack(anchor="w",pady=(0,12))
+        self.program_updates=ProgramUpdates(self,body)
+        self.covers.build_settings(body)
         ttk.Label(body,text="Feedback & Verbesserungsvorschläge",style="Card.TLabel",font=("Segoe UI Semibold",13)).pack(anchor='w')
         feedback=ttk.Label(body,text="Du hast einen Fehler entdeckt oder eine Idee zur Verbesserung? Ich freue mich über deine Rückmeldung.",style="Card.TLabel",wraplength=750)
         feedback.pack(anchor='w',pady=(7,5));labels.append(feedback)
@@ -525,18 +809,25 @@ class Manager(tk.Tk):
         background=ttk.Combobox(body,textvariable=self.background_var,values=list(BACKGROUNDS),state='readonly',width=46)
         background.pack(anchor='w',pady=(6,12));background.bind('<<ComboboxSelected>>',lambda e:self.change_background())
         ttk.Separator(body).pack(fill="x",pady=12)
+        danger=ttk.LabelFrame(body,text="Daten entfernen – mit geprüfter Sicherung",padding=12)
+        danger.pack(fill="x",pady=(8,12))
+        body=danger
         ttk.Label(body,text="Bibliothek zurücksetzen",style="Card.TLabel",font=("Segoe UI Semibold",13)).pack(anchor="w")
-        labels.append(ttk.Label(body,text="Entfernt Filme, Serien, Bewertungen, Notizen, Favoriten, Sehstatus, Staffeln und Importverlauf. Einstellungen und bestehende Sicherungen bleiben erhalten. Vorher wird eine neue Sicherung erstellt.",style="Card.TLabel",wraplength=750))
-        labels[-1].pack(anchor="w",pady=(7,10))
+        labels.append(ttk.Label(body,text="Entfernt Filme, Serien, Bewertungen, Notizen, Favoriten, Sehstatus, Staffeln, Importverlauf und gespeicherte Filmlisten. Einstellungen und bestehende Sicherungen bleiben erhalten. Vorher wird eine neue Sicherung erstellt.",style="Card.TLabel",wraplength=750))
+        labels[-1].pack(anchor="w",pady=(5,7))
         self.reset_library_button=ttk.Button(body,text="Bibliothek zurücksetzen",command=self.reset_library_dialog,style="Danger.TButton")
         self.reset_library_button.pack(anchor="w",pady=(0,15))
         ttk.Separator(body).pack(fill="x",pady=12)
         ttk.Label(body,text="Alle lokalen Appdaten löschen",style="Card.TLabel",font=("Segoe UI Semibold",13)).pack(anchor="w")
         labels.append(ttk.Label(body,text="Entfernt zusätzlich Einstellungen, Sicherungen, App-Exporte, Diagnosen und gespeicherte Browsersitzungen im eigenen Appdatenordner. Außerhalb dieses Ordners liegende Exporte und unbekannte Dateien bleiben erhalten. Die Anwendung wird danach beendet.",style="Card.TLabel",wraplength=750))
-        labels[-1].pack(anchor="w",pady=(7,10))
+        labels[-1].pack(anchor="w",pady=(5,7))
         self.delete_data_button=ttk.Button(body,text="Alle lokalen Appdaten löschen",command=self.delete_data_dialog,style="Danger.TButton")
-        self.delete_data_button.pack(anchor="w",pady=(0,20))
+        self.delete_data_button.pack(anchor="w",pady=(0,12))
         body.bind("<Configure>",lambda e:[label.configure(wraplength=max(250,e.width-45)) for label in labels],add='+')
+
+    def open_website(self):
+        if not webbrowser.open(WEBSITE):
+            messagebox.showerror("Browser","Der Standardbrowser konnte nicht geöffnet werden.",parent=self)
 
     def open_feedback(self):
         if not webbrowser.open(FEEDBACK_MAILTO):
@@ -617,19 +908,60 @@ class Manager(tk.Tk):
         dialog.panel=panel;dialog.toggle_button=toggle_button;dialog.detail_label=detailed
         return dialog
 
-    def _busy_guard(self):
+    def _busy_guard(self,*,allow_covers=False):
         if self._export_running:
             messagebox.showinfo("Aktualisierung läuft","Bitte den laufenden Abruf oder Import abwarten. Suche, Sortierung und Navigation bleiben verfügbar.",parent=self)
             return True
+        if not allow_covers and self.covers.batch_running:
+            messagebox.showinfo('Coverabgleich läuft','Bitte den Coverabgleich für diese Änderung pausieren. Filmlisten, Suche, Sortierung und Navigation bleiben verfügbar.',parent=self)
+            return True
         return False
+
+    def confirm_deletion(self,title,scope):
+        dialog=tk.Toplevel(self);dialog.title(title);dialog.transient(self)
+        dialog.result=False
+        factor=float(self.tk.call('tk','scaling'))/(96/72)
+        left,top,right,bottom=monitor_work_area(self)
+        width=max(1,min(round(640*factor),right-left-32))
+        height=max(1,min(round(440*factor),bottom-top-64))
+        dialog.geometry(f'{width}x{height}{left+(right-left-width)//2:+d}{top+(bottom-top-height)//2:+d}')
+        dialog.minsize(min(width,round(380*factor)),min(height,round(190*factor)))
+        box=ttk.Frame(dialog,padding=12);box.pack(fill='both',expand=True)
+        row=ttk.Frame(box);row.pack(side='bottom',fill='x',pady=(10,0))
+        def cancel():dialog.destroy()
+        def accept():dialog.result=True;dialog.destroy()
+        delete=ttk.Button(row,text='Ja, endgültig löschen',style='Danger.TButton',command=accept)
+        delete.pack(side='left')
+        safe=ttk.Button(row,text='Abbrechen',command=cancel);safe.pack(side='right')
+        heading=ttk.Label(box,text=title,style='Section.TLabel',wraplength=max(200,width-32))
+        heading.pack(fill='x',pady=(0,8))
+        area=ttk.Frame(box);area.pack(fill='both',expand=True)
+        scrollbar=ttk.Scrollbar(area);scrollbar.pack(side='right',fill='y')
+        text=tk.Text(area,wrap='word',height=4,width=1,relief='flat',highlightthickness=0,
+                     bg=COLORS['panel'],fg=COLORS['ink'],font=FONT,padx=6,pady=6,
+                     yscrollcommand=scrollbar.set,takefocus=True)
+        text.pack(side='left',fill='both',expand=True);scrollbar.configure(command=text.yview)
+        text.insert('1.0',scope.replace('\n\n','\n'));text.configure(state='disabled')
+        dialog.confirm_button=delete;dialog.cancel_button=safe;dialog.scope_text=text
+        dialog.bind('<Return>',lambda e:'break');dialog.bind('<Escape>',lambda e:cancel())
+        dialog.protocol('WM_DELETE_WINDOW',cancel);dialog.grab_set();safe.focus_set()
+        dialog.update_idletasks()
+        frame_x=max(0,dialog.winfo_rootx()-dialog.winfo_x())
+        frame_top=max(0,dialog.winfo_rooty()-dialog.winfo_y())
+        x=left+max(0,(right-left-width-2*frame_x)//2)
+        y=top+max(0,(bottom-top-height-frame_top-frame_x)//2)
+        dialog.geometry(f'{width}x{height}{x:+d}{y:+d}')
+        self.wait_window(dialog);return dialog.result
 
     def reset_library_dialog(self):
         if self._busy_guard(): return
-        if not messagebox.askyesno("Bibliothek zurücksetzen", "Alle Filme, Serien, Bewertungen, Notizen, Favoriten, Sehstatus, Staffeln und Importverlauf dieser Bibliothek zurücksetzen?\n\nEinstellungen und Sicherungen bleiben erhalten. Vorher wird eine Sicherung angelegt. Es erfolgt keine automatische Wiederherstellung.",parent=self):
+        if not self.confirm_deletion('Bibliothek wirklich zurücksetzen?',
+                'Entfernt Filme, Serien, Bewertungen, Notizen, Favoriten, Staffeln, Importverlauf und gespeicherte Filmlisten.\nEinstellungen, API Keys und Bilddateien bleiben erhalten. Vorher wird eine geprüfte Datenbanksicherung erstellt.'):
             return
         try:
-            self.db.backup()
+            verified_backup(self.db)
             self.db.reset_library()
+            self.movie_lists.refresh()
         except Exception as exc:
             messagebox.showerror("Zurücksetzen nicht abgeschlossen",str(exc),parent=self)
             return
@@ -643,6 +975,7 @@ class Manager(tk.Tk):
         root=self.db.db_path.parent
         try:
             preview=managed_data_preview(root)
+            destination=automatic_backup_directory()
         except Exception as exc:
             messagebox.showerror("Löschung nicht möglich",str(exc),parent=self)
             return
@@ -650,20 +983,26 @@ class Manager(tk.Tk):
                "Bibliothek, Einstellungen, Sicherungen, App-Exporte, Diagnosen und lokale Browser-Anmeldungen werden gelöscht.\n"
                f"{len(preview['foreign'])} unbekannte Dateien/Ordner bleiben erhalten. Exporte außerhalb dieses Ordners bleiben erhalten.\n\n"
                "Externe Moviepilot-Browser und andere App-Instanzen vorher schließen. Fortfahren?")
-        if not messagebox.askyesno("Alle lokalen Appdaten löschen",scope,parent=self): return
-        confirm=simpledialog.askstring("Endgültig löschen","Zum endgültigen Löschen ALLES LÖSCHEN eingeben:",parent=self)
-        if confirm != "ALLES LÖSCHEN": return
+        if not self.confirm_deletion('Alle lokalen Appdaten wirklich löschen?',scope+f'\nAutomatische Sicherung: {destination}\nAuch Filmlisten, Covercache und persönliche Schlüssel in den App-Einstellungen sind betroffen. Die Entwicklerkonfiguration neben der EXE bleibt erhalten. Eine geprüfte Sicherung wird außerhalb dieses Ordners abgelegt.'):
+            return
+        try:
+            backup=backup_managed_data(self.db,Path(destination))
+        except Exception as exc:
+            messagebox.showerror('Sicherung fehlgeschlagen – nichts gelöscht',str(exc),parent=self)
+            return
         self.db.close()
         try:
             result=delete_managed_data(root)
         except Exception as exc:
-            messagebox.showerror("Löschung unvollständig",str(exc)+"\n\nDie Anwendung wird beendet. Verbliebene Dateien wurden nicht als gelöscht bestätigt.",parent=self)
+            messagebox.showerror("Löschung unvollständig",str(exc)+"\n\nDie Anwendung wird beendet. Verbliebene Dateien wurden nicht als gelöscht bestätigt. Sicherung: \n"+str(backup)+"",parent=self)
         else:
-            messagebox.showinfo("Appdaten gelöscht",f"Verwaltete Appdaten gelöscht. {len(result['foreign'])} unbekannte Dateien/Ordner wurden nicht bearbeitet.\nDie Anwendung wird beendet.",parent=self)
+            messagebox.showinfo("Appdaten gelöscht",f"Verwaltete Appdaten gelöscht. {len(result['foreign'])} unbekannte Dateien/Ordner wurden nicht bearbeitet.\nGeprüfte Sicherung: {backup}\nDie Anwendung wird beendet.",parent=self)
         self.destroy()
 
     def focus_search(self):
         self.tabs.select(self.page_library)
+        self.filters_hidden=False;self._apply_filter_visibility()
+        self.library_scroll.canvas.yview_moveto(0)
         self.search_entry.focus_set()
         self.search_entry.select_range(0,"end")
 
@@ -672,7 +1011,7 @@ class Manager(tk.Tk):
         for lbl,val in zip(self.count_labels,[stats["count_by_type"].get("Film",0),stats["count_by_type"].get("Serie",0),stats["total"],f"{stats['average']:.2f}".replace(".",",")]):
             lbl.configure(text=f"{val:,}".replace(",",".") if isinstance(val,int) else val)
         if stats["total"] == 0:
-            self.empty_hint.pack(fill="x",pady=(0,10),before=self.library_area)
+            self.empty_hint.pack(fill="x",pady=(0,10),before=self.rows_controls)
         else:
             self.empty_hint.pack_forget()
         self.refresh_list()
@@ -687,7 +1026,21 @@ class Manager(tk.Tk):
         self.tree.delete(*self.tree.get_children())
         rows=self.db.get_rows(query=self.search_text.get(),media_type=self.type_filter.get(),sort_by=self._sort_field,descending=self._sort_descending)
         self.visible_rows=filter_rows(rows,self.filters,self.genre_mode,self.excluded_genres)
-        rows=self.visible_rows
+        from genre_art import page_slice
+        if reset_page:self.gallery.number=1
+        if self.view_choice.get()=='Listenansicht':
+            if reset_page:self.list_number=1
+            size=len(self.visible_rows) or 1 if self.list_size.get()=='Alle' else int(self.list_size.get())
+            pages=max(1,(len(self.visible_rows)+size-1)//size)
+            self.list_number=max(1,min(self.list_number,pages));number=self.list_number
+            rows=self.visible_rows[(number-1)*size:number*size]
+        else:
+            rows,self.gallery.number,pages=page_slice(self.visible_rows,self.gallery.number,int(self.page_size.get()))
+            number=self.gallery.number
+        self.visible_page_rows=rows
+        self.page_caption.configure(text=f'Seite {number} von {pages}')
+        self.page_previous.configure(state='disabled' if number==1 else 'normal')
+        self.page_next.configure(state='disabled' if number==pages else 'normal')
         for key,button in self.filter_buttons.items():
             values=self.filters[key]
             active=bool(values) or (key=='genres' and bool(self.excluded_genres))
@@ -711,7 +1064,9 @@ class Manager(tk.Tk):
             # Item mapping is based on immutable Moviepilot URL, not ambiguous names.
         self._tree_url={f"item{i}":x["url"] for i,x in enumerate(rows)}
         active=bool(self.search_text.get().strip()) or self.type_filter.get()!='Alle' or any(self.filters.values()) or bool(self.excluded_genres)
-        self.rows_label.configure(text=selection_caption(rows) if active else 'Gesamte Bibliothek')
+        self.rows_label.configure(text=selection_caption(self.visible_rows) if active else 'Gesamte Bibliothek')
+        count=sum(bool(v) for v in self.filters.values())+bool(self.search_text.get().strip())+(self.type_filter.get()!='Alle')+bool(self.excluded_genres)
+        self.filter_activity.configure(text=f'{count} Filter aktiv' if count else 'Keine Filter aktiv')
         if shown:
             self.tree.selection_set(shown)
             self.tree.see(shown)
@@ -726,23 +1081,36 @@ class Manager(tk.Tk):
         self.schedule_list_images()
 
     def apply_view(self):
+        mini=self.view_choice.get()=='Miniaturansicht'
+        self.size_picker.configure(textvariable=self.page_size if mini else self.list_size,values=(6,12,18,24) if mini else (24,50,100,'Alle'))
         self.listing.pack_forget()
         if hasattr(self,'gallery'):self.gallery.pack_forget()
         if self.view_choice.get()=='Miniaturansicht':
+            self.mini_controls.pack(side='right')
             for iid in self._list_photo_refs:
                 if self.tree.exists(iid):self.tree.item(iid,image='')
             self._list_photo_refs={}
             self.gallery.pack(fill='both',expand=True)
             self.gallery.set_rows(getattr(self,'visible_rows',[]),reset=False)
         else:
+            self.mini_controls.pack_forget()
             self.listing.pack(fill='both',expand=True);self.schedule_list_images()
 
+    def change_thumbnail_size(self):
+        self.gallery.card_size=self.thumbnail_size.get()
+        self.settings['thumbnail_size']=self.thumbnail_size.get();self.save_settings()
+        self.gallery.request_draw()
+
     def change_view(self):
-        self.apply_view();self.settings['view']=self.view_choice.get();self.save_settings()
+        mini=self.view_choice.get()=='Miniaturansicht'
+        self.size_picker.configure(textvariable=self.page_size if mini else self.list_size,values=(6,12,18,24) if mini else (24,50,100,'Alle'))
+        self.apply_view();self.refresh_list(reset_page=False);self.settings['view']=self.view_choice.get();self.save_settings()
 
     def change_page_size(self):
+        if self.view_choice.get()=='Listenansicht':
+            self.list_number=1;self.settings['list_size']=self.list_size.get();self.save_settings();self.refresh_list();return
         self.gallery.size=int(self.page_size.get());self.gallery.number=1
-        if self.view_choice.get()=='Miniaturansicht':self.gallery.set_rows(self.visible_rows)
+        self.refresh_list()
         self.settings['page_size']=self.gallery.size;self.save_settings()
 
     def choose_sort(self):
@@ -759,7 +1127,7 @@ class Manager(tk.Tk):
     def load_list_images(self):
         self._list_job=None
         if not hasattr(self,'visible_rows') or self.view_choice.get()!='Listenansicht' or not self.tree.winfo_ismapped():return
-        count=len(self.visible_rows)
+        count=len(self.visible_page_rows)
         if not count:self._list_photo_refs={};return
         first,last=self.tree.yview()
         start=max(0,int(first*count)-1)
@@ -768,7 +1136,7 @@ class Manager(tk.Tk):
         for i in range(start,end):
             iid=f'item{i}'
             if self.tree.exists(iid):
-                photo=self.art.get(self.visible_rows[i],(20,30));refs[iid]=photo
+                photo=self.art.get(self.visible_page_rows[i],(20,30));refs[iid]=photo
                 self.tree.item(iid,image=photo)
         for iid in old.keys()-refs.keys():
             if self.tree.exists(iid):self.tree.item(iid,image='')
@@ -785,6 +1153,7 @@ class Manager(tk.Tk):
         menu.add_separator()
         menu.add_command(label='Eigenes Bild auswählen …',command=lambda:self.choose_user_image(url))
         menu.add_command(label='Bild über HTTPS-URL hinzufügen …',command=lambda:self.url_user_image(url))
+        menu.add_command(label='Cover online suchen / ändern …',command=lambda:self.covers.open(url))
         menu.add_command(label='Eigenes Bild entfernen',command=lambda:self.remove_user_image(url))
         try:menu.tk_popup(event.x_root,event.y_root)
         finally:menu.grab_release()
@@ -823,6 +1192,7 @@ class Manager(tk.Tk):
 
     def open_moviepilot(self,url):
         try:
+            if not url.startswith('https://'):raise ValueError()
             verified=normalized_url(url)
         except ValueError:
             messagebox.showinfo("Kein Moviepilot-Link","Für diesen lokal importierten Titel liegt kein gültiger Moviepilot-Link vor. Ein Download oder alter URL-Export kann ihn ergänzen.",parent=self)
@@ -993,7 +1363,7 @@ class Manager(tk.Tk):
             messagebox.showerror("Exporter konnte nicht gestartet werden",str(exc))
 
     def start_browser_export(self):
-        if self._export_running: return
+        if self._busy_guard(): return
         cfg_file=data_directory()/"settings.json"
         config={}
         if cfg_file.is_file():
@@ -1020,15 +1390,24 @@ class Manager(tk.Tk):
             return update_library(username,root,notify,measure)
         self._start_task(work,"Verbindung zu Moviepilot wird hergestellt",profile_download=True)
 
-    def _start_task(self, work, message, profile_download=False):
+    def _start_task(self, work, message, profile_download=False, list_import=False, cancel_callback=None):
         if self._export_running: return
+        if not list_import and self.covers.batch_running:
+            self._busy_guard();return
+        self._task_is_list=list_import
         self._export_running=True
+        self.movie_lists.set_busy(True)
         for button in (self.export_button,self.import_button,self.backup_button,self.file_export_button,self.reset_library_button,self.delete_data_button):
             button.configure(state="disabled")
         self.progress_text.set(message)
         self.statusbar.set(message)
-        self.progress_frame.pack(fill="x",before=self.tabs)
+        self.progress_frame.pack(side='bottom',fill="x",before=self.tabs)
+        self.progress_bar.configure(variable='')
+        if cancel_callback:
+            self.progress_cancel.configure(command=cancel_callback,text='Pausieren' if self.covers.batch_running else 'Abbrechen')
+            self.progress_cancel.pack(side='right',before=self.progress_label,padx=(10,0))
         self._indeterminate_progress()
+        self._sync_cover_progress()
         def run():
             try:
                 result=work(lambda msg:self._export_queue.put(("progress",msg)),lambda value:self._export_queue.put(("measure",value)))
@@ -1058,10 +1437,26 @@ class Manager(tk.Tk):
                 elif event=="measure":
                     self.progress_bar.stop()
                     self.progress_bar.configure(mode="determinate",maximum=payload["pages"],value=payload["page"])
-                    noun="Filme" if payload["kind"]=="Film" else "Serien"
-                    self.progress_text.set(f"{noun} werden geladen: Seite {payload['page']} von {payload['pages']} · {payload['loaded']} von {payload['expected']} Bewertungen")
+                    if payload['kind']=='Cover':
+                        self.covers.update_progress(payload)
+                        self.progress_text.set(f"Cover: {payload['page']} / {payload['expected']} geprüft · {payload['loaded']} neu · {payload.get('stats',{}).get('skipped',0)} übersprungen")
+                    elif payload['kind']=='Filmliste':
+                        self.progress_text.set(f"Filmliste: Seite {payload['page']} von {payload['pages']} · {payload['loaded']} von {payload['expected']} Listeneinträge")
+                    else:
+                        noun="Filme" if payload["kind"]=="Film" else "Serien"
+                        self.progress_text.set(f"{noun} werden geladen: Seite {payload['page']} von {payload['pages']} · {payload['loaded']} von {payload['expected']} Bewertungen")
                 elif event=="done":
                     self._finish_export()
+                    if 'fanart_result' in payload:
+                        self.covers.handle(payload['fanart_result'])
+                        continue
+                    if 'movie_list' in payload:
+                        snapshot=payload['movie_list']
+                        self.movie_lists.refresh(snapshot.source_url)
+                        self.statusbar.set(f'Filmliste gespeichert: {snapshot.name} · {len(snapshot.entries)} Filme/Serien')
+                        if snapshot.warnings:
+                            messagebox.showinfo('Filmliste gespeichert', '\n'.join(snapshot.warnings[:12]), parent=self)
+                        continue
                     if 'image_data' in payload:
                         try:
                             self.images.save(payload['image_url'],payload['image_data'],validated=True)
@@ -1084,6 +1479,10 @@ class Manager(tk.Tk):
                     messagebox.showinfo("Aktualisierung abgeschlossen",summary+("\n\n"+"\n".join(warnings) if warnings else ""),parent=self)
                 elif event=="error":
                     self._finish_export()
+                    if self._task_is_list:
+                        self.statusbar.set('Listenimport fehlgeschlagen; lokale Listen bleiben erhalten.')
+                        messagebox.showerror('Listenimport fehlgeschlagen',payload+'\n\nBestehende Listen bleiben erhalten.',parent=self)
+                        continue
                     self.statusbar.set("Aktualisierung fehlgeschlagen; bestehende Bibliothek bleibt erhalten.")
                     messagebox.showerror("Aktualisierung fehlgeschlagen",payload+"\n\nBestehende Bewertungen und persönliche Angaben bleiben erhalten.",parent=self)
         except queue.Empty:
@@ -1092,13 +1491,15 @@ class Manager(tk.Tk):
 
     def _finish_export(self):
         self._export_running=False
+        self.movie_lists.set_busy(False)
         self.progress_bar.stop()
         self.progress_frame.pack_forget()
+        self.progress_cancel.pack_forget()
         for button in (self.export_button,self.import_button,self.backup_button,self.file_export_button,self.reset_library_button,self.delete_data_button):
             button.configure(state="normal")
 
     def backup(self):
-        if self._busy_guard(): return
+        if self._busy_guard(allow_covers=True): return
         try:
             path=self.db.backup()
             messagebox.showinfo("Sicherung erstellt",f"Sicherung gespeichert unter:\n{path}")
@@ -1106,7 +1507,7 @@ class Manager(tk.Tk):
             messagebox.showerror("Sicherung",str(e))
 
     def export_dialog(self):
-        if self._busy_guard(): return
+        if self._busy_guard(allow_covers=True): return
         dialog=tk.Toplevel(self); dialog.title("Filmdatenbank exportieren")
         dialog.transient(self); dialog.configure(bg=COLORS['bg']); dialog.resizable(False,False)
         body=ttk.Frame(dialog,padding=22); body.pack(fill="both")
@@ -1153,9 +1554,14 @@ class Manager(tk.Tk):
         return dialog
 
     def close(self):
+        if self.covers.batch_running:
+            self.covers.pause_batch(resume=True);self.after(300,self.close);return
         if self._export_running:
             messagebox.showinfo("Aktualisierung läuft","Bitte Abruf und Speicherung abwarten, bevor du die Anwendung schließt.",parent=self)
             return
+        self.program_updates.close()
+        self.after_cancel(self.covers._auto_job)
+        self.after_cancel(self.covers._cover_job)
         self.save_columns()
         self.db.close()
         for name in ('_poll_job','_filter_job','_list_job'):
@@ -1167,6 +1573,15 @@ class Manager(tk.Tk):
 if __name__=="__main__":
     try:
         app=Manager()
+        if '--diagnose-taskbar' in sys.argv and sys.platform=='win32':
+            def taskbar_diagnosis():
+                try:
+                    from windows_taskbar import diagnose
+                    folder=data_directory()/'diagnose';folder.mkdir(exist_ok=True)
+                    (folder/'taskbar.json').write_text(json.dumps(diagnose(app),indent=2),encoding='utf-8')
+                except Exception as error:
+                    app.statusbar.set('Taskleistendiagnose fehlgeschlagen: '+type(error).__name__)
+            app.after(1200,taskbar_diagnosis)
         app.mainloop()
     except Exception as exc:
         import traceback

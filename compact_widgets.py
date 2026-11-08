@@ -7,54 +7,57 @@ from catalog_view import compact_filter_text
 FILTER_LABEL_FONT=('Segoe UI',10,'bold')
 FILTER_LABEL_GAP=3
 
+
+def scroll_wheel(target, delta):
+    """Accumulate high-resolution deltas on the actual scroll target, without timers."""
+    remainder=getattr(target,'_wheel_remainder',0.0)
+    if remainder*delta<0:remainder=0.0
+    total=remainder+delta/120.0
+    steps=int(total)
+    target._wheel_remainder=total-steps
+    if steps:target.yview_scroll(-steps,'units')
+    return 'break'
+
 HELP_STEPS=(
-    ('1. Moviepilot-Profil angeben','Für ein öffentliches Profil genügt dein Benutzername oder Profillink. Der normale öffentliche Abruf benötigt keine Anmeldung.'),
-    ('2. Bewertungen herunterladen','Klicke auf „Von Moviepilot aktualisieren“. Filme, Serien und Bewertungen werden geprüft und lokal gespeichert.'),
-    ('3. Filme und Serien finden','Durchsuche deine Bibliothek oder filtere nach Erscheinungsjahr, deiner Note, Bewertungsdatum und Genre.'),
-    ('4. Filmdatenbank exportieren','Exportiere alle Bewertungen oder nur die aktuell gefilterten Ergebnisse als Excel oder CSV.'),
-    ('5. Daten mit KI auswerten','Du kannst die Exportdatei selbst beispielsweise bei ChatGPT hochladen und Filmempfehlungen erhalten. Die App überträgt nichts automatisch an KI-Dienste.'),
+    ('1. Bewertungen übernehmen','„Von Moviepilot aktualisieren“ lädt ein öffentliches Profil. „Datei importieren“ übernimmt vorhandene CSV-/Excel-Dateien. Filme und Serien bleiben getrennt erkennbar.'),
+    ('2. Bibliothek durchsuchen','Suche, Filter und Sortierung kombinieren. Tabelle: 24, 50, 100 oder Alle. Miniaturen: Klein, Mittel oder Groß mit eigener Seitengröße.'),
+    ('3. Listen vergleichen','Unter Filmlisten eine öffentliche Moviepilot-Adresse mit „Liste importieren“ speichern. Empfehlungsabgleich vergleicht eingefügte Titel mit deiner Bibliothek.'),
+    ('4. Bilder verwenden','Eigene Bilder per Rechtsklick zuordnen. In Einstellungen & Daten Onlinecover aktivieren, persönlichen API Key speichern und prüfen. Fehlende Cover werden automatisch geladen; Pausieren/Fortsetzen bleiben verfügbar.'),
+    ('5. Exportieren und sichern','„Filmdatenbank exportieren“ speichert alle oder gefilterte Bewertungen als Excel/CSV. „Sicherung“ schützt die Datenbank. Für den Gerätewechsel auch Bilder und Appdaten separat sichern.'),
 )
 
-QUICK_HELP='''Deine Bewertungen in wenigen Schritten
+QUICK_HELP='''FilmKompass im Alltag
 
-1. Profil vorbereiten
-Für öffentliche Moviepilot-Bewertungen genügt der Profillink oder Benutzername. Der normale Download arbeitet per HTTPS ohne Anmeldung und ohne Browsercookies. Deine Anmeldung im normalen Browser wird dabei nicht verwendet.
+1. Start und Bewertungen
+Neue Installationen starten leer. Unter „Von Moviepilot aktualisieren“ deinen Benutzernamen oder Profillink eingeben. Für den normalen HTTPS-Abruf müssen die Bewertungen öffentlich sichtbar sein; eine Browser-Anmeldung wird nicht übernommen. Private Profile oder Zugriffssperren werden nicht umgangen. Alternativ eine vorhandene Datei mit „Datei importieren“ laden. Vor der Aktualisierung vorhandener Daten wird eine Sicherung angelegt. Film-/Serienbewertungen, 0 und Halbnoten bleiben erhalten.
 
-Private oder eingeschränkte Profile können nicht auf diesem Weg geladen werden. Importiere dann einen vorhandenen CSV-/Excel-Export. Es werden keine Zugriffsbeschränkungen umgangen. Der optionale Browseradapter verwendet ausschließlich ein eigenes lokales Profil; eine dort fehlende oder abgelaufene Anmeldung kann eine erneute manuelle Anmeldung verlangen. Dieser Adapter ist nicht in der portablen Version enthalten und sein aktuelles Seitenlayout ist nicht bestätigt.
+2. Finden, filtern und sortieren
+„Titel suchen“ und Film/Serie kombinieren. Erscheinungsjahr bezeichnet Filmjahr beziehungsweise Serienstart, Bewertungsjahr/-monat das gespeicherte genaue Bewertungsdatum. Innerhalb eines Filters gilt ODER, zwischen Filtern UND. Genres unterstützen gewünschte Werte (ODER/UND) und Ausschlüsse. „Alles zurücksetzen“ leert Suche und Filter. „Filter ausblenden“ schafft Platz; die Auswahl bleibt erhalten. Spaltenüberschriften und „Sortieren“ ändern nur die Anzeige, keine Bewertung. Strg+F fokussiert die Suche, Strg+A markiert Eingaben. Rechtsklick bietet Bearbeiten beziehungsweise das passende Kontextmenü. Tab wechselt den Fokus, in Textfeldern wird nichts automatisch abgesendet.
 
-2. Bewertungen herunterladen
-„Von Moviepilot aktualisieren“ öffnen und deinen Profillink einfügen. Film- und Serienlisten werden vollständig geprüft, gespeichert und mit der vorhandenen Bibliothek abgeglichen. Eine Sicherung vorhandener Daten wird zuvor angelegt.
+3. Tabelle, Miniaturen und Quellen
+Listenansicht zeigt 24, 50, 100 oder Alle; Standard 100. Alle ist eine durchgehend scrollbarere Tabelle der gefilterten Ergebnisse. Miniaturansicht hat unabhängig davon 6, 12, 18 oder 24 Titel pro Seite und die Größen Klein, Mittel, Groß. Ansicht und Größen werden gespeichert. Beide Ansichten verwenden dieselben Filter und dieselbe Sortierung. Zurück/Weiter blättern. Film/Serie und persönliche Note stehen an den Karten. Doppelklick auf einen gültigen Titel mit ↗ öffnet dessen HTTPS-Moviepilot-Quelle; fehlende Links werden nicht erraten.
 
-3. Finden und öffnen
-Titel suchen, Film/Serie wählen und die kleinen Filter öffnen. Erscheinungsjahr meint das Filmjahr beziehungsweise gespeicherte Startjahr der Serie. Meine Note ist deine Moviepilot-Note einschließlich 0 und Halbnoten. Bewertet im Jahr und Bewertet im Monat beziehen sich auf das echte Bewertungsdatum; ohne Jahr gilt der Monat in allen Jahren. Innerhalb dieser Filter gilt ODER, zwischen Filtern UND. Moviepilot Genre verwendet unveränderte Originalnamen: mindestens eines (ODER, Standard) oder alle gewünschten Genres (UND); jedes ausgeschlossene Genre entfernt den Titel. Eine neue widersprüchliche Auswahl entfernt dasselbe Genre aus der Gegenseite. „Zurücksetzen“ im Auswahlfenster löscht diesen Filter; „Alles zurücksetzen“ löscht auch Suche und Typauswahl.
+4. Filmlisten und Empfehlungen
+Unter Filmlisten eine einzelne öffentliche Moviepilot-URL einfügen und „Liste importieren“ wählen. Benutzerlisten werden vollständig geprüft; Bestenlisten-Kataloge sind auf 200 Titel begrenzt und als Ausschnitt gekennzeichnet. Zugriffssperren wie HTTP 403 werden respektiert. Die Tabelle vergleicht lokale Bewertungen und Moviepilot Ø getrennt. „Excel / CSV …“ exportiert die geladene Liste. „Lokal entfernen“ löscht nur diese lokale Liste. Ein fehlender Bibliothekseintrag bedeutet nicht automatisch ungesehen.
+Im Empfehlungsabgleich einen Titel pro Zeile einfügen und „Mit meiner Moviepilot-Liste abgleichen“ wählen. Unklare Ähnlichkeiten müssen selbst geprüft werden. Die App schreibt dadurch keine Bewertungen um.
 
-Spaltenüberschriften sortieren; Spaltengrenzen lassen sich ziehen. Ein Doppelklick auf den Titel öffnet den vorhandenen Moviepilot-Link. Ohne gespeicherten Link wird nichts erraten.
+5. Eigene und automatische Cover
+Per Rechtsklick ein eigenes JPG, PNG oder WebP zuordnen. Eine direkte HTTPS-Bildadresse darf bewusst eingegeben werden; nur Bilder mit passenden Nutzungsrechten verwenden. Eigene Bilder haben Vorrang. Danach kommen lokal gespeicherte Fanart-Cover; die 15 freigegebenen Genreillustrationen dienen als Ersatz und sind keine echten Filmposter.
+Unter Einstellungen & Daten „Onlinecover automatisch laden“ aktivieren. Persönlichen API Key bei fanart.tv beantragen, im maskierten Feld eintragen und „Speichern und Verbindung prüfen“ wählen. Dafür ist kein Project API Key und keine Entwicklerregistrierung nötig. Vorhandene Entwickler-Projektschlüssel bleiben unter erweiterten Einstellungen unterstützt. Nach erfolgreicher Prüfung wird bei noch deaktivierter Automatik gefragt, ob fehlende Cover jetzt und künftig geladen werden sollen. Nein lässt die Automatik aus. Die Entscheidung wird gespeichert. Danach klappt die Einrichtung ein; „API Key ändern“ öffnet sie wieder. Ohne neue Eingabe kann eine vorhandene Konfiguration erneut geprüft werden. Die App zeigt gespeicherte Schlüssel nicht offen an.
+Fehlende Cover werden automatisch zugeordnet, sichere Treffer übernommen, unklare ausgelassen. Höchstens zwei Coveraufträge arbeiten gleichzeitig; Wikidata bleibt seriell. „Pausieren“ beendet laufende Anfragen geordnet, „Fortsetzen“ nimmt offene Titel wieder auf. Deaktivieren von „Onlinecover automatisch laden“ bricht nur den Coverlauf ab; gespeicherte Ergebnisse bleiben erhalten. In den erweiterten Einstellungen stehen letztes Ergebnis und „Erneut prüfen“. Der Coverabgleich und „Liste importieren“ laufen unabhängig und besitzen eigene Status-/Abbruchmöglichkeiten. Für Änderungen an persönlichen Bildern, Bibliotheksimport oder Zurücksetzen einen laufenden Coverabgleich zuerst pausieren. Serverfehler können den Lauf stoppen; vorhandene Bilder bleiben erhalten.
 
-4. Exportieren und sichern
-„Filmdatenbank exportieren“ bietet CSV oder Excel, standardmäßig die gesamte Bibliothek. Eine gefilterte Auswahl ist ausdrücklich wählbar; die Anzahl wird angezeigt. Beide Formate enthalten genau sechs Spalten. Für eine vollständige Sicherung einschließlich vorhandener Links und alter persönlicher Angaben verwende zusätzlich „Sicherung“.
+6. Export und Sicherung
+„Filmdatenbank exportieren“ speichert alle Bewertungen oder ausdrücklich die gefilterte Auswahl als Excel/CSV mit sechs öffentlichen Spalten. Noten sind Zahlen, keine Datumsangaben. Gleichnamige Dateien werden nur nach Bestätigung überschrieben. Reimporte ohne URLs ordnen über Typ, exakten Titel und Jahr zu; Mehrdeutigkeiten werden nicht geschätzt.
+„Sicherung“ erstellt eine SQLite-Sicherung mit Links und persönlichen Angaben. Bildzuordnungen sind enthalten, die Bilddateien selbst nicht. Für einen Gerätewechsel daher zusätzlich den gesamten Appdatenordner samt user-images und fanart-cache separat sichern. Keine zwei Programmversionen gleichzeitig mit demselben Datenordner verwenden.
 
-Beim Reimport ohne URLs erfolgt die Zuordnung über Typ, exakten Titel und Jahr. Bei Mehrdeutigkeit wird abgebrochen. Unbekannte Titel bleiben lokal ohne Weblink. Gleichnamige Werke im selben Jahr lassen sich ohne URL nicht zuverlässig unterscheiden; nutze dafür einen alten Export mit URLs.
+7. Speicherorte und Offlinebetrieb
+Persönliche Daten liegen standardmäßig unter %LOCALAPPDATA%/MoviepilotManager; Python und EXE verwenden denselben Ordner. Unter Einstellungen & Daten steht der tatsächliche Datenbankpfad. Ein gesonderter Testdatenordner ist über die Teststartanleitung möglich. Vorhandene Daten werden nicht als Programmpaket veröffentlicht und nicht automatisch zurückgesetzt. Bibliothek zurücksetzen entfernt auch gespeicherte Filmlisten, erhält Einstellungen, Keys und Bilddateien und erstellt vorher eine geprüfte Datenbanksicherung. Alle lokalen Appdaten löschen entfernt auch Einstellungen und Cache im verwalteten Profil; die automatische externe Sicherung im Windows-Dokumenteordner unter FilmKompass/Sicherungen beachten. Unbekannte Dateien und externe Exporte bleiben erhalten. Im eigenen Bestätigungsfenster ist Abbrechen die sichere Standardaktion; nur „Ja, endgültig löschen“ bestätigt. Kein Bestätigungstext und keine Enter-Bestätigung.
+Bibliothek, Filter, Vergleiche und lokal gespeicherte Bilder sind offline nutzbar. Aktualisierungen, öffentliche Listen, neue Onlinecover und Browserlinks benötigen Internet. Keine Registrierung ist für lokale Bibliotheksfunktionen nötig. Die App überträgt nichts automatisch an KI-Dienste oder Cloudspeicher. Eine freiwillige KI-Auswertung einer Exportdatei geschieht ausschließlich außerhalb der App auf eigene Entscheidung.
 
-5. Freiwillige KI-Auswertung
-Du kannst die vollständige Exportdatei selbst bei ChatGPT oder einem anderen KI-Dienst hochladen, um deinen Geschmack und Lieblingsgenres zu analysieren und Film-/Serienempfehlungen anhand deiner Noten zu erhalten. Die App überträgt keine Daten an KI-Dienste.
-
-Bei häufiger Nutzung kannst du die Datei selbst in einem privaten Cloudordner, etwa Google Drive, ablegen und später durch eine aktuelle vollständige Version ersetzen. Keine automatische Synchronisation: Zugriff hängt von tatsächlich verbundenen Diensten und Berechtigungen ab. Persönliche Listen brauchen keine öffentlichen Freigabelinks.
-
-6. Bilder und Miniaturansicht
-Listenansicht und Miniaturansicht verwenden dieselben Filter und dieselbe Sortierung. In der Miniaturansicht wählst du 6, 12, 18 oder 24 Titel pro Seite; Ansicht und Seitengröße bleiben gespeichert. Eigene Genreillustrationen sind keine echten Filmplakate. Film/Serie erkennt man am kleinen Badge; Doppelklick öffnet den gespeicherten Moviepilot-Link.
-
-Mit Rechtsklick kannst du einem Titel ein eigenes JPG, PNG oder WebP zuweisen oder eine selbst eingegebene direkte HTTPS-Bildadresse verwenden. Nutze nur Bilder mit passenden Nutzungsrechten. Die App sucht keine Poster und liest keine fremden Anmeldungen aus. Beim URL-Abruf erhält der eingegebene Bildserver deine Anfrage. Entfernen der eigenen Zuordnung zeigt wieder das Genremotiv. Die Quelldatei bleibt erhalten; lokale Benutzerbilder werden niemals mit dem Programm veröffentlicht.
-
-Neue Installationen starten leer. Lokale Daten und Bilder bleiben im eigenen Appdatenordner. Unter Einstellungen & Daten kannst du vier vorhandene Kinomotive für den Kopfbereich wählen. Standard ist Ohne Hintergrundbild; fehlende Motive fallen sicher auf die dunkle Fläche zurück. Tabellen bleiben einfarbig.
-
-7. Lokale Daten und Filterstatistik
-Die vier oberen Kennzahlen beschreiben immer die gesamte Bibliothek. Bei aktiver Suche oder Filtern zeigt die Zeile darunter die komplette aktuelle Treffermenge, unabhängig von der Miniaturseite. Noten 0 bleiben gespeichert und werden wie global aus dem Durchschnitt ausgeschlossen; ohne positive Noten erscheint ein Gedankenstrich.
-
-Lokale Daten liegen standardmäßig unter %LOCALAPPDATA%/MoviepilotManager; Python und EXE nutzen denselben Ordner. Vorhandene Sicherungen werden nicht automatisch gelöscht. Vor Bibliotheksreset oder Appdatenreset Umfang und Bestätigungen sorgfältig prüfen. Für einen Gerätewechsel den Appdatenordner einschließlich eigener Bilder separat sichern; SQLite-Sicherungen enthalten Bildzuordnungen, aber keine Bilddateien.
-
-Genrefenster: Alle markieren schließt alle bekannten Genres außer der gewünschten Auswahl aus, unabhängig von der Suche. Alle Ausschlüsse entfernen erhält die gewünschte Auswahl. Nur ausgewählte Genres ist ohne gewünschtes Genre deaktiviert. Klick/Strg schaltet einzelne Werte um, Shift ergänzt einen sichtbaren Bereich; ausgeblendete Auswahlen bleiben erhalten.
-
-Exportdateien heißen je nach gewähltem Umfang FilmKompass_Filmdaten_Alle oder FilmKompass_Filmdaten_Filter. Kollisionen erhalten Datum/Uhrzeit und bei Bedarf eine Nummer. Eine vorhandene Datei wird nur nach ausdrücklicher Bestätigung überschrieben.'''
+8. Statistik und Einstellungen
+Moviepilot-URLs in Filmlisten öffnen sich per einfachem Klick; im Empfehlungsabgleich ist der zugeordnete Titel anklickbar. Rechtsklick bietet „Bei Moviepilot öffnen“. Nur gültige HTTPS-Film-/Serienlinks werden geöffnet.
+„🌐 Webseite“ im Kopfbereich und in Einstellungen & Daten öffnet die offizielle FilmKompass-Seite. Unter „Programmupdates“ manuell „Auf Updates prüfen“ wählen; „Downloadseite öffnen“ führt zur offiziellen Quelle. Automatische Prüfung ist freiwillig, standardmäßig aus und auf einmal in 24 Stunden begrenzt. Es wird nichts automatisch installiert. Bei fehlender Versionsdatei oder Verbindungsfehler erscheint keine Aktualitätsbestätigung.
+Statistik zeigt die vorhandenen lokalen Daten; die Kopfkennzahlen beschreiben die ganze Bibliothek, Filter die aktuelle Treffermenge. Noten 0 werden gespeichert, aber aus dem Kopf-Durchschnitt ausgeschlossen. Änderungen zeigt die Importhistorie. Einstellungen & Daten enthält Cover, Hinweise, Kopf-Hintergrund und Datenwerkzeuge. Fehlende optionale Bilder fallen auf die dunkle Darstellung zurück. Genreersatz, eigene Bilder und Cachezuordnungen bleiben beim Ansichtswechsel erhalten.'''
 
 class HeadingTip:
     """One delayed tooltip for a narrow title heading; no column geometry changes."""

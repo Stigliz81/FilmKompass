@@ -1,5 +1,5 @@
 """Central product/build metadata; never incremented by tests or builds."""
-APP_VERSION = "1.0"
+APP_VERSION = "1.1"
 BUILD_NUMBER = 2
 DISPLAY_VERSION = APP_VERSION
 PRODUCT_NAME = "FilmKompass"
@@ -9,6 +9,7 @@ APP_TITLE = f"{PUBLIC_NAME} {DISPLAY_VERSION}"
 EXE_STEM = PRODUCT_NAME
 ICON_PNG = "assets/filmkompass.png"
 ICON_ICO = "assets/filmkompass.ico"
+APP_USER_MODEL_ID = "Stigliz81.FilmKompass"
 SUBTITLE = "Excel-/CSV-Export- und Archivtool für deine Moviepilot-Bewertungen."
 INDEPENDENCE_NOTICE = "Unabhängiges Projekt, nicht offiziell mit Moviepilot verbunden."
 WINDOWS_PRODUCT_VERSION = tuple(map(int, APP_VERSION.split('.'))) + (0, 0)

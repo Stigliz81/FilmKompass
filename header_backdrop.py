@@ -13,7 +13,7 @@ def background_choice(value):
 
 class HeaderBackdrop(tk.Canvas):
     def __init__(self,parent,folder,colors,choice):
-        super().__init__(parent,bg=colors['bg'],height=190,highlightthickness=0)
+        super().__init__(parent,bg=colors['bg'],height=120,highlightthickness=0)
         self.folder=Path(folder);self.colors=colors;self.choice=background_choice(choice)
         self.source=None;self.photo=None;self.cache=OrderedDict();self.job=None;self.parts={}
         self.image_item=self.create_image(0,0,anchor='nw')
@@ -40,19 +40,50 @@ class HeaderBackdrop(tk.Canvas):
 
     def render(self):
         self.job=None
-        if len(self.parts)!=7:return
+        if len(self.parts)!=9:return
         width=max(1,self.winfo_width());pad=22
+        compact = getattr(self,'compact',False)
+        top_pad=6
         brand,brand_item=self.parts['brand'];support,support_item=self.parts['support']
         top=max(brand.winfo_reqheight(),support.winfo_reqheight())
-        self.coords(brand_item,pad,17);self.coords(support_item,max(pad,width-pad-support.winfo_reqwidth()),17)
-        actions,actions_item=self.parts['actions'];y=17+top+12
-        self.coords(actions_item,pad,y);y+=actions.winfo_reqheight()+16
-        card_width=max(1,(width-2*pad-27)//4)
+        brand_x=max(pad,(width-brand.winfo_reqwidth())//2)
+        support_x=max(pad,width-pad-support.winfo_reqwidth())
+        support_y=top_pad if brand_x+brand.winfo_reqwidth()+12<=support_x else top_pad+brand.winfo_reqheight()+3
+        top=max(brand.winfo_reqheight(),support_y-top_pad+support.winfo_reqheight())
+        self.coords(brand_item,brand_x,top_pad)
+        self.coords(support_item,support_x,support_y)
+        actions,actions_item=self.parts['actions'];y=top_pad+top+3
+        details,details_item=self.parts['details']
+        columns=4 if sum(b.winfo_reqwidth()+6 for b in actions.buttons)+details.winfo_reqwidth()+10<=width-2*pad else 2
+        for i,button in enumerate(actions.buttons):button.grid(row=i//columns,column=i%columns)
+        actions.update_idletasks()
+        self.coords(actions_item,pad,y)
+        self.coords(details_item,max(pad,width-pad-details.winfo_reqwidth()),y)
+        description,description_item=self.parts['description']
+        room=width-2*pad-actions.winfo_reqwidth()-details.winfo_reqwidth()-24
+        factor=float(self.tk.call('tk','scaling'))/(96/72)
+        if room>=round(300*factor):
+            description.configure(wraplength=room)
+            self.coords(description_item,pad+actions.winfo_reqwidth()+10,y)
+            self.itemconfigure(description_item,state='normal')
+            actions.update_idletasks()
+            row_height=max(actions.winfo_reqheight(),details.winfo_reqheight(),description.winfo_reqheight())
+        else:
+            self.itemconfigure(description_item,state='hidden' if compact else 'normal')
+            row_height=max(actions.winfo_reqheight(),details.winfo_reqheight())
+            if not compact:
+                description.configure(wraplength=width-2*pad)
+                self.coords(description_item,pad,y+row_height+3)
+                actions.update_idletasks();row_height+=description.winfo_reqheight()+3
+        y+=row_height+4
+        card_width=max(1,min(round(230*factor),(width-2*pad-27)//4))
         card_height=max(self.parts[f'card{i}'][0].winfo_reqheight() for i in range(4))
         for i in range(4):
             _,item=self.parts[f'card{i}'];self.coords(item,pad+i*(card_width+9),y)
             self.itemconfigure(item,width=card_width,height=card_height)
-        height=y+card_height+10
+        for i in range(4):
+            self.itemconfigure(self.parts[f'card{i}'][1],state='hidden' if compact else 'normal')
+        height=(y if compact else y+card_height)+round(10*factor)
         if int(self.cget('height'))!=height:self.configure(height=height)
         if self.source is None:
             self.itemconfigure(self.image_item,image='');self.photo=None;return

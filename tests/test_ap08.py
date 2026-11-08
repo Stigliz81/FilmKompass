@@ -32,4 +32,4 @@ class FilterDisplay(unittest.TestCase):
         self.assertEqual(parsed.scheme,'mailto')
         self.assertEqual(parsed.path,'stigliz1981@gmail.com')
         self.assertEqual(FEEDBACK_EMAIL,parsed.path)
-        self.assertEqual(parse_qs(parsed.query),{'subject':['FilmKompass 1.0 – Feedback']})
+        self.assertEqual(parse_qs(parsed.query),{'subject':['FilmKompass 1.1 – Feedback']})

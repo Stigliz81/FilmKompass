@@ -29,4 +29,8 @@ Bei häufiger Nutzung kannst du die vollständige Datei selbst in einem **privat
 
 [MIT-Lizenz](../LICENSE), **Copyright (c) 2026 Stigliz81**. [Fremdlizenzen](../THIRD_PARTY_NOTICES.md) bleiben erhalten. Die Projektlizenz umfasst keine fremden Filmbilder oder Marken. Spenden sind freiwillig. PayPal, Bitcoin Mainnet, Litecoin Mainnet, Litecoin BEP20, USDC BEP20 und Binance-App-Link bleiben getrennt beschriftet; aktuelle Empfänger-/Zahlungsdienstannahme ist nicht geprüft.
 
-Feedback: **stigliz1981@gmail.com**. Unter **Einstellungen & Daten → Feedback & Verbesserungsvorschläge** öffnet „E-Mail schreiben“ das lokale Mailprogramm mit dem Betreff „FilmKompass 1.0 – Feedback“. Die App versendet nichts automatisch und fügt keine Dateien oder Nutzerdaten bei.
+Feedback: **stigliz1981@gmail.com**. Unter **Einstellungen & Daten → Feedback & Verbesserungsvorschläge** öffnet „E-Mail schreiben“ das lokale Mailprogramm mit dem Betreff „FilmKompass 1.1 – Feedback“. Die App versendet nichts automatisch und fügt keine Dateien oder Nutzerdaten bei.
+
+## Ergänzungen Version 1.1
+
+Gespeicherte öffentliche Filmlisten bleiben getrennt von der eigenen Bewertungsbibliothek. Optionale Coveranfragen senden Titel-/ID-Informationen an Wikidata und Fanart.tv, Bilder kommen vom Fanart-CDN. Persönliche API-Keys liegen nur lokal; vollständige Profilsicherungen können sie enthalten. Die freiwillige Versionsprüfung ruft ausschließlich die öffentliche Versionsdatei ab, ohne Bibliotheksdaten zu senden. Vor dem vollständigen Profillöschen wird eine geprüfte externe Sicherung unter Dokumente/FilmKompass/Sicherungen erstellt.

@@ -1,7 +1,11 @@
+# FilmKompass – Projektanweisungen
+
+Aktueller öffentlicher Stand: **1.1 / AP16.09**, Build 2. Die AP-Verweise unten dokumentieren ihre damaligen Grenzen. Maßgeblich sind der öffentliche Abschluss und die ausdrückliche aktuelle Beauftragung. Coverautomatik ist opt-in; persönlicher Fanart-Key genügt allein. Keine echten Schlüssel verteilen.
+
 # FilmKompass
 
 - Tkinter/ttk GUI in `moviepilot_manager.py`; SQLite, CSV/XLSX and import protection in `manager_core.py`; HTTPS and optional Playwright adapter in `moviepilot_exporter.py`. `update_worker.py` downloads and imports on a worker-owned SQLite connection; all Tk changes stay on the main loop via Queue.
-- Product version is `app_info.APP_VERSION` (1.0); AP10 introduces central `BUILD_NUMBER` (now 2 for AP11), display and Windows metadata derived from it. Never auto-increment during tests/builds; only change the number for an explicitly commissioned new build. Do not reset database schemas.
+- Product version is `app_info.APP_VERSION` (1.1); AP10 introduces central `BUILD_NUMBER` (now 2 for AP11), display and Windows metadata derived from it. Never auto-increment during tests/builds; only change the number for an explicitly commissioned new build. Do not reset database schemas.
 - Keep changes scoped; preserve ratings including 0, personal notes, seasons and import completeness checks.
 - User data defaults to `%LOCALAPPDATA%/MoviepilotManager`. Tests must set `MOVIEPILOT_MANAGER_DATA_DIR` to an isolated workspace directory or use temporary databases. Never exercise resets against productive data. `app_data.py` implements the explicitly commissioned in-app reset: only after UI confirmations, scoped to its ownership-marked data root/allowlist; reject links, junctions, outside paths and active browser profiles. A partial deletion is an error, never a success.
 - No automatic seed import. Release/source packages use an explicit file allowlist; never include `qa`, original development folders, databases, exports, cookies, settings, logs or browser profiles.
@@ -19,9 +23,17 @@
 - Native computer control: visible warning, wait about five seconds, then act; clearly announce completion when no inputs remain.
 - Prepare locally only. No push, upload, release or public publication without explicit user approval. Keep prior working distributions.
 
+- Fanart.tv is explicitly commissioned: `fanart_covers.py` provides opt-in, per-title v3.2 lookup, Wikidata identity checks and a private `fanart-cache`; `fanart_view.py` uses the existing worker queue. No automatic cover downloads while displaying a library. Manual `user_images` always take priority. No TMDB API. Project key only from `FANART_TV_PROJECT_KEY` or ignored `fanart.local.json`; optional personal key stays in private settings. Never log/package actual keys or cached third-party artwork. Fanart development itself forbids builds/releases; the subsequent AP16.03 completion explicitly authorizes one private OneDir test candidate and portable ZIP, without publication. Keep the existing SQLite schema unchanged.
+
 - Keep current AP11.01 layout: six peer filter columns Film/Serie, Erscheinungsjahr, Meine Note, Bewertungsjahr, Bewertungsmonat, Moviepilot Genre. Search/reset separately above; wrap whole columns at narrow widths, never headings.
-- Public display/package names use only product version 1.0. Internal BUILD_NUMBER remains 2, Windows file version 1.0.0.2; never auto-increment. Film-roll icon bytes unchanged.
+- Public display/package names use the explicitly commissioned product version 1.1. Internal BUILD_NUMBER remains 2, Windows file version 1.1.0.2; never auto-increment. AP15.06 replaces the film-roll icon with the approved compass from `Picon Neu.png`; preserve that original. Main workspace: `<lokaler Projektordner>`. Test builds use distinct OutputRoot and WorkRoot, never the existing AP12 outputs.
 - Shared dark state maps cover normal, active, selected, focus, pressed and disabled; Tk listboxes and combobox popdowns require explicit selection colors.
 - Genre bulk exclusion uses all original genres minus desired genres independently of search. Toggle/Ctrl/Shift, OR/AND and exclusions stay intact; reserve the popup footer.
 - Public exports use six columns, explicit scope, timestamp/counter collision handling and overwrite confirmation. The FilmKompass filename prefix does not change serialization.
 - AP12 authorizes first publication only to Stigliz81/FilmKompass after technical/privacy/name checks. Recheck gh auth status and gh api user before upload, require Stigliz81 and appropriate repository rights. Never fall back to another account. Copy only SOURCE_FILES into a clean repository; never push development refs.
+
+- Version 1.1 explicitly authorizes a manual serial missing-cover batch using the existing Fanart/Wikidata cache and worker queue, three persisted card sizes, compact header and one private test build/ZIP. No background startup downloads, manual-cover replacement, SQLite schema changes or website changes. Keep AP16.03 sash/wheel/filter safeguards. No publication.
+
+- AP16.06.1 explicitly approves all 15 staged genre images and a private RC1 (1.1, Build 2 unchanged). Automatic covers use a separate coordinator queue and a bounded two-worker pool: Wikidata serial, Fanart/CDN <=2, shared cache RLock plus ID/image deduplication. Moviepilot list jobs keep their own worker, cancellation and SQLite connection; cover pool threads never access SQLite/Tk. Preserve API keys, old genre backups, parser/403 behavior and all prior builds. No publication or additional cleanup.
+
+- AP16.07 adds secondary-table HTTPS Moviepilot links and independent opt-in product update checks. Only official version.json/allowlisted download URLs; automatic checks off by default, at most once per 24h including failures. site/version.json is locally prepared for publicly released 1.0, never private 1.1. Private RC2 only; preserve 1.1/Build2, icon assets and prior candidates. No publication.

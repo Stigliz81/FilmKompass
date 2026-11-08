@@ -352,6 +352,9 @@ class Catalog:
         folder.mkdir(parents=True, exist_ok=True)
         name = datetime.now().strftime("MoviepilotManager_%Y%m%d_%H%M%S_%f.sqlite")
         output = folder / name
+        # Reserve exclusively: even an unlikely timestamp collision must not replace a backup.
+        with output.open('xb'):
+            pass
         con2 = sqlite3.connect(output)
         try:
             self.con.backup(con2)
@@ -507,6 +510,10 @@ class Catalog:
     def reset_library(self):
         """Caller must explicitly confirm; settings/backups are outside this transaction."""
         with self.con:
+            existing = {r[0] for r in self.con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            for table in ('movie_list_entries', 'movie_lists'):
+                if table in existing:
+                    self.con.execute(f'DELETE FROM {table}')
             for table in ("seasons", "personal", "changes", "import_runs", "titles", "meta"):
                 self.con.execute(f"DELETE FROM {table}")
             self.con.execute("DELETE FROM sqlite_sequence WHERE name IN ('changes','import_runs')")

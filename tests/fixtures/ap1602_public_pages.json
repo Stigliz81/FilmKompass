@@ -1,0 +1,734 @@
+{
+  "small": {
+    "public": true,
+    "id": 393500,
+    "title": "Top-10-Liste-DrBlues",
+    "totalListItemCount": 10,
+    "page": 1,
+    "itemsPerPage": 25,
+    "editedAt": "2022-04-24T12:15:06.000+02:00",
+    "permalink": "top-10-liste-drblues-drblues",
+    "listItems": [
+      {
+        "itemId": 104343146,
+        "itemType": "Movie",
+        "itemTitle": "Easy Rider",
+        "itemData": {
+          "id": 2321,
+          "title": "Easy Rider",
+          "type": "Movie",
+          "productionYear": "1969",
+          "hideRatings": false,
+          "communityRatingsCount": 8105,
+          "averageCommunityRating": 70.301,
+          "path": "/movies/easy-rider-2"
+        }
+      },
+      {
+        "itemId": 104343155,
+        "itemType": "Movie",
+        "itemTitle": "Zwei Cheyenne auf dem Highway",
+        "itemData": {
+          "id": 29074,
+          "title": "Zwei Cheyenne auf dem Highway",
+          "type": "Movie",
+          "productionYear": "1989",
+          "hideRatings": false,
+          "communityRatingsCount": 69,
+          "averageCommunityRating": 69.1304,
+          "path": "/movies/powwow-highway"
+        }
+      },
+      {
+        "itemId": 104343156,
+        "itemType": "Movie",
+        "itemTitle": "Schultze gets the blues",
+        "itemData": {
+          "id": 4554,
+          "title": "Schultze gets the blues",
+          "type": "Movie",
+          "productionYear": "2003",
+          "hideRatings": false,
+          "communityRatingsCount": 1641,
+          "averageCommunityRating": 68.05,
+          "path": "/movies/schultze-gets-the-blues"
+        }
+      },
+      {
+        "itemId": 104343157,
+        "itemType": "Movie",
+        "itemTitle": "Einer flog über das Kuckucksnest",
+        "itemData": {
+          "id": 3099,
+          "title": "Einer flog über das Kuckucksnest",
+          "type": "Movie",
+          "productionYear": "1975",
+          "hideRatings": false,
+          "communityRatingsCount": 26766,
+          "averageCommunityRating": 80.7164,
+          "path": "/movies/einer-flog-uebers-kuckucksnest"
+        }
+      },
+      {
+        "itemId": 104343348,
+        "itemType": "Movie",
+        "itemTitle": "In China essen sie Hunde",
+        "itemData": {
+          "id": 1551,
+          "title": "In China essen sie Hunde",
+          "type": "Movie",
+          "productionYear": "1999",
+          "hideRatings": false,
+          "communityRatingsCount": 11817,
+          "averageCommunityRating": 76.4213,
+          "path": "/movies/in-china-essen-sie-hunde"
+        }
+      },
+      {
+        "itemId": 104343350,
+        "itemType": "Movie",
+        "itemTitle": "Requiem for a Dream",
+        "itemData": {
+          "id": 1936,
+          "title": "Requiem for a Dream",
+          "type": "Movie",
+          "productionYear": "2000",
+          "hideRatings": false,
+          "communityRatingsCount": 27486,
+          "averageCommunityRating": 79.0175,
+          "path": "/movies/requiem-for-a-dream-2"
+        }
+      },
+      {
+        "itemId": 104343352,
+        "itemType": "Movie",
+        "itemTitle": "Mystic River",
+        "itemData": {
+          "id": 2174,
+          "title": "Mystic River",
+          "type": "Movie",
+          "productionYear": "2003",
+          "hideRatings": false,
+          "communityRatingsCount": 16742,
+          "averageCommunityRating": 75.9381,
+          "path": "/movies/mystic-river-2"
+        }
+      },
+      {
+        "itemId": 104343357,
+        "itemType": "Movie",
+        "itemTitle": "Spiel mir das Lied vom Tod",
+        "itemData": {
+          "id": 3654,
+          "title": "Spiel mir das Lied vom Tod",
+          "type": "Movie",
+          "productionYear": "1968",
+          "hideRatings": false,
+          "communityRatingsCount": 23375,
+          "averageCommunityRating": 78.0849,
+          "path": "/movies/spiel-mir-das-lied-vom-tod"
+        }
+      },
+      {
+        "itemId": 104343370,
+        "itemType": "Movie",
+        "itemTitle": "Dark Star - Finsterer Stern",
+        "itemData": {
+          "id": 844,
+          "title": "Dark Star - Finsterer Stern",
+          "type": "Movie",
+          "productionYear": "1974",
+          "hideRatings": false,
+          "communityRatingsCount": 1836,
+          "averageCommunityRating": 69.3491,
+          "path": "/movies/dark-star"
+        }
+      },
+      {
+        "itemId": 104363515,
+        "itemType": "Movie",
+        "itemTitle": "Papillon",
+        "itemData": {
+          "id": 4068,
+          "title": "Papillon",
+          "type": "Movie",
+          "productionYear": "1973",
+          "hideRatings": false,
+          "communityRatingsCount": 5645,
+          "averageCommunityRating": 77.7927,
+          "path": "/movies/papillon-2"
+        }
+      }
+    ]
+  },
+  "best": {
+    "total": 136720,
+    "title": "Die besten Filme",
+    "type": "filme",
+    "order": "beste",
+    "page": 1,
+    "filters": [],
+    "results": [
+      {
+        "id": "268",
+        "path": "/movies/pulp-fiction",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1994</span>",
+        "title": "Pulp Fiction",
+        "hideRatings": false,
+        "communityRatingsCount": 63714,
+        "averageCommunityRating": 84.4636,
+        "averageCriticsRating": 87.3022
+      },
+      {
+        "id": "525",
+        "path": "/movies/fight-club-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1999</span>",
+        "title": "Fight Club",
+        "hideRatings": false,
+        "communityRatingsCount": 67003,
+        "averageCommunityRating": 85.2302,
+        "averageCriticsRating": 85.4795
+      },
+      {
+        "id": "2589",
+        "path": "/movies/der-pate",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1972</span>",
+        "title": "Der Pate",
+        "hideRatings": false,
+        "communityRatingsCount": 37668,
+        "averageCommunityRating": 83.1118,
+        "averageCriticsRating": 88.1034
+      },
+      {
+        "id": "1834",
+        "path": "/movies/the-dark-knight-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2008</span>",
+        "title": "The Dark Knight",
+        "hideRatings": false,
+        "communityRatingsCount": 64451,
+        "averageCommunityRating": 83.4036,
+        "averageCriticsRating": 84.6078
+      },
+      {
+        "id": "1002",
+        "path": "/movies/die-verurteilten",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1994</span>",
+        "title": "Die Verurteilten",
+        "hideRatings": false,
+        "communityRatingsCount": 39440,
+        "averageCommunityRating": 86.0841,
+        "averageCriticsRating": 83.0417
+      },
+      {
+        "id": "57",
+        "path": "/movies/sieben",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1995</span>",
+        "title": "Sieben",
+        "hideRatings": false,
+        "communityRatingsCount": 51809,
+        "averageCommunityRating": 81.8055,
+        "averageCriticsRating": 84.2029
+      },
+      {
+        "id": "1412",
+        "path": "/movies/die-zwoelf-geschworenen",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1957</span>",
+        "title": "Die zwölf Geschworenen",
+        "hideRatings": false,
+        "communityRatingsCount": 13291,
+        "averageCommunityRating": 81.8892,
+        "averageCriticsRating": 88.125
+      },
+      {
+        "id": "2590",
+        "path": "/movies/der-pate-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1974</span>",
+        "title": "Der Pate 2",
+        "hideRatings": false,
+        "communityRatingsCount": 21228,
+        "averageCommunityRating": 81.4957,
+        "averageCriticsRating": 86.7222
+      },
+      {
+        "id": "1624",
+        "path": "/movies/apocalypse-now",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1979</span>",
+        "title": "Apocalypse Now",
+        "hideRatings": false,
+        "communityRatingsCount": 24197,
+        "averageCommunityRating": 78.6282,
+        "averageCriticsRating": 87.1359
+      },
+      {
+        "id": "32173",
+        "path": "/movies/inception",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2010</span>",
+        "title": "Inception",
+        "hideRatings": false,
+        "communityRatingsCount": 78871,
+        "averageCommunityRating": 82.0995,
+        "averageCriticsRating": 81.5646
+      },
+      {
+        "id": "2789",
+        "path": "/movies/psycho-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1960</span>",
+        "title": "Psycho",
+        "hideRatings": false,
+        "communityRatingsCount": 17450,
+        "averageCommunityRating": 78.3904,
+        "averageCriticsRating": 86.1712
+      },
+      {
+        "id": "1299",
+        "path": "/movies/der-herr-der-ringe-die-zwei-tuerme",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2002</span>",
+        "title": "Der Herr der Ringe: Die zwei Türme",
+        "hideRatings": false,
+        "communityRatingsCount": 60030,
+        "averageCommunityRating": 81.7038,
+        "averageCriticsRating": 82.4419
+      },
+      {
+        "id": "1300",
+        "path": "/movies/der-herr-der-ringe-die-rueckkehr-des-koenigs",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2003</span>",
+        "title": "Der Herr der Ringe: Die Rückkehr des Königs",
+        "hideRatings": false,
+        "communityRatingsCount": 76682,
+        "averageCommunityRating": 81.3492,
+        "averageCriticsRating": 81.732
+      },
+      {
+        "id": "1329",
+        "path": "/movies/leon-der-profi",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1994</span>",
+        "title": "Léon - Der Profi",
+        "hideRatings": false,
+        "communityRatingsCount": 51471,
+        "averageCommunityRating": 82.0341,
+        "averageCriticsRating": 82.2
+      },
+      {
+        "id": "3654",
+        "path": "/movies/spiel-mir-das-lied-vom-tod",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1968</span>",
+        "title": "Spiel mir das Lied vom Tod",
+        "hideRatings": false,
+        "communityRatingsCount": 23375,
+        "averageCommunityRating": 78.0849,
+        "averageCriticsRating": 86.5094
+      },
+      {
+        "id": "874",
+        "path": "/movies/heat-3--3",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1995</span>",
+        "title": "Heat",
+        "hideRatings": false,
+        "communityRatingsCount": 25267,
+        "averageCommunityRating": 80.168,
+        "averageCriticsRating": 83.8938
+      },
+      {
+        "id": "1094",
+        "path": "/movies/blade-runner",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1982</span>",
+        "title": "Blade Runner",
+        "hideRatings": false,
+        "communityRatingsCount": 22876,
+        "averageCommunityRating": 76.3529,
+        "averageCriticsRating": 86.0853
+      },
+      {
+        "id": "1235",
+        "path": "/movies/goodfellas-drei-jahrzehnte-in-der-mafia",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1990</span>",
+        "title": "GoodFellas - Drei Jahrzehnte in der Mafia",
+        "hideRatings": false,
+        "communityRatingsCount": 26133,
+        "averageCommunityRating": 81.5513,
+        "averageCriticsRating": 83.3333
+      },
+      {
+        "id": "835",
+        "path": "/movies/stirb-langsam",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1988</span>",
+        "title": "Stirb langsam",
+        "hideRatings": false,
+        "communityRatingsCount": 39701,
+        "averageCommunityRating": 78.5395,
+        "averageCriticsRating": 84.7059
+      },
+      {
+        "id": "1363",
+        "path": "/movies/taxi-driver-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1976</span>",
+        "title": "Taxi Driver",
+        "hideRatings": false,
+        "communityRatingsCount": 22687,
+        "averageCommunityRating": 78.1531,
+        "averageCriticsRating": 86.0194
+      },
+      {
+        "id": "596",
+        "path": "/movies/der-herr-der-ringe-die-gefaehrten",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2001</span>",
+        "title": "Der Herr der Ringe: Die Gefährten",
+        "hideRatings": false,
+        "communityRatingsCount": 86168,
+        "averageCommunityRating": 79.6539,
+        "averageCriticsRating": 82.044
+      },
+      {
+        "id": "3099",
+        "path": "/movies/einer-flog-uebers-kuckucksnest",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1975</span>",
+        "title": "Einer flog über das Kuckucksnest",
+        "hideRatings": false,
+        "communityRatingsCount": 26766,
+        "averageCommunityRating": 80.7164,
+        "averageCriticsRating": 83.5238
+      },
+      {
+        "id": "2637",
+        "path": "/movies/vertigo-aus-dem-reich-der-toten",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1958</span>",
+        "title": "Vertigo - Aus dem Reich der Toten",
+        "hideRatings": false,
+        "communityRatingsCount": 9382,
+        "averageCommunityRating": 76.8711,
+        "averageCriticsRating": 86.6827
+      },
+      {
+        "id": "1092",
+        "path": "/movies/star-wars-episode-v-das-imperium-schlaegt-zurueck",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1980</span>",
+        "title": "Das Imperium schlägt zurück",
+        "hideRatings": false,
+        "communityRatingsCount": 42953,
+        "averageCommunityRating": 80.5735,
+        "averageCriticsRating": 82.7586
+      },
+      {
+        "id": "2855",
+        "path": "/movies/m-eine-stadt-sucht-einen-moerder",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1931</span>",
+        "title": "M - Eine Stadt sucht einen Mörder",
+        "hideRatings": false,
+        "communityRatingsCount": 6915,
+        "averageCommunityRating": 76.2707,
+        "averageCriticsRating": 86.9588
+      }
+    ]
+  },
+  "best2": {
+    "total": 136720,
+    "title": "Die besten Filme",
+    "type": "filme",
+    "order": "beste",
+    "page": 2,
+    "filters": [],
+    "results": [
+      {
+        "id": "302",
+        "path": "/movies/matrix",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1999</span>",
+        "title": "Matrix",
+        "hideRatings": false,
+        "communityRatingsCount": 74496,
+        "averageCommunityRating": 78.6399,
+        "averageCriticsRating": 81.4793
+      },
+      {
+        "id": "2297",
+        "path": "/movies/memento",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2000</span>",
+        "title": "Memento",
+        "hideRatings": false,
+        "communityRatingsCount": 40163,
+        "averageCommunityRating": 79.6034,
+        "averageCriticsRating": 81.5625
+      },
+      {
+        "id": "4145",
+        "path": "/movies/city-of-god",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2002</span>",
+        "title": "City of God",
+        "hideRatings": false,
+        "communityRatingsCount": 30049,
+        "averageCommunityRating": 80.9426,
+        "averageCriticsRating": 82.6111
+      },
+      {
+        "id": "1607",
+        "path": "/movies/citizen-kane",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1941</span>",
+        "title": "Citizen Kane",
+        "hideRatings": false,
+        "communityRatingsCount": 8637,
+        "averageCommunityRating": 76.0623,
+        "averageCriticsRating": 86.1579
+      },
+      {
+        "id": "1097",
+        "path": "/movies/alien-das-unheimliche-wesen-aus-einer-fremden-welt",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1979</span>",
+        "title": "Alien - Das unheimliche Wesen aus einer fremden Welt",
+        "hideRatings": false,
+        "communityRatingsCount": 39978,
+        "averageCommunityRating": 74.6157,
+        "averageCriticsRating": 84.223
+      },
+      {
+        "id": "1936",
+        "path": "/movies/requiem-for-a-dream-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2000</span>",
+        "title": "Requiem for a Dream",
+        "hideRatings": false,
+        "communityRatingsCount": 27486,
+        "averageCommunityRating": 79.0175,
+        "averageCriticsRating": 82.8713
+      },
+      {
+        "id": "25513",
+        "path": "/movies/inglourious-basterds-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2009</span>",
+        "title": "Inglourious Basterds",
+        "hideRatings": false,
+        "communityRatingsCount": 73164,
+        "averageCommunityRating": 77.6199,
+        "averageCriticsRating": 81.6901
+      },
+      {
+        "id": "887",
+        "path": "/movies/terminator-2-tag-der-abrechnung",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1991</span>",
+        "title": "Terminator 2 - Tag der Abrechnung",
+        "hideRatings": false,
+        "communityRatingsCount": 35082,
+        "averageCommunityRating": 75.496,
+        "averageCriticsRating": 83.9147
+      },
+      {
+        "id": "1374",
+        "path": "/movies/das-schweigen-der-laemmer",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1991</span>",
+        "title": "Das Schweigen der Lämmer",
+        "hideRatings": false,
+        "communityRatingsCount": 58438,
+        "averageCommunityRating": 79.0989,
+        "averageCriticsRating": 80.0654
+      },
+      {
+        "id": "1850",
+        "path": "/movies/das-fenster-zum-hof",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1954</span>",
+        "title": "Das Fenster zum Hof",
+        "hideRatings": false,
+        "communityRatingsCount": 11578,
+        "averageCommunityRating": 77.262,
+        "averageCriticsRating": 84.3684
+      },
+      {
+        "id": "6245",
+        "path": "/movies/zwei-glorreiche-halunken",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1966</span>",
+        "title": "Zwei glorreiche Halunken",
+        "hideRatings": false,
+        "communityRatingsCount": 13946,
+        "averageCommunityRating": 78.7541,
+        "averageCriticsRating": 85.2
+      },
+      {
+        "id": "5772",
+        "path": "/movies/no-country-for-old-men-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2007</span>",
+        "title": "No Country for Old Men",
+        "hideRatings": false,
+        "communityRatingsCount": 38658,
+        "averageCommunityRating": 77.4268,
+        "averageCriticsRating": 82.0543
+      },
+      {
+        "id": "557",
+        "path": "/movies/l-a-confidential-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1997</span>",
+        "title": "L.A. Confidential",
+        "hideRatings": false,
+        "communityRatingsCount": 18256,
+        "averageCommunityRating": 77.8602,
+        "averageCriticsRating": 83.2673
+      },
+      {
+        "id": "1045",
+        "path": "/movies/uhrwerk-orange",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1971</span>",
+        "title": "Uhrwerk Orange",
+        "hideRatings": false,
+        "communityRatingsCount": 28875,
+        "averageCommunityRating": 77.2379,
+        "averageCriticsRating": 82.8261
+      },
+      {
+        "id": "270",
+        "path": "/movies/reservoir-dogs-wilde-hunde",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1992</span>",
+        "title": "Reservoir Dogs",
+        "hideRatings": false,
+        "communityRatingsCount": 32874,
+        "averageCommunityRating": 79.4865,
+        "averageCriticsRating": 80.6612
+      },
+      {
+        "id": "855",
+        "path": "/movies/der-groe-diktator",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1940</span>",
+        "title": "Der große Diktator",
+        "hideRatings": false,
+        "communityRatingsCount": 13959,
+        "averageCommunityRating": 77.2652,
+        "averageCriticsRating": 84.2935
+      },
+      {
+        "id": "907",
+        "path": "/movies/star-wars-krieg-der-sterne",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1977</span>",
+        "title": "Krieg der Sterne",
+        "hideRatings": false,
+        "communityRatingsCount": 44666,
+        "averageCommunityRating": 79.8024,
+        "averageCriticsRating": 80.3814
+      },
+      {
+        "id": "1244",
+        "path": "/movies/shining-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1980</span>",
+        "title": "Shining",
+        "hideRatings": false,
+        "communityRatingsCount": 40839,
+        "averageCommunityRating": 75.1042,
+        "averageCriticsRating": 83.0282
+      },
+      {
+        "id": "26078",
+        "path": "/movies/gran-torino",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2008</span>",
+        "title": "Gran Torino",
+        "hideRatings": false,
+        "communityRatingsCount": 52510,
+        "averageCommunityRating": 80.3494,
+        "averageCriticsRating": 79.6983
+      },
+      {
+        "id": "238",
+        "path": "/movies/the-big-lebowski-2",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1998</span>",
+        "title": "The Big Lebowski",
+        "hideRatings": false,
+        "communityRatingsCount": 57001,
+        "averageCommunityRating": 76.8698,
+        "averageCriticsRating": 80.7143
+      },
+      {
+        "id": "808",
+        "path": "/movies/zurueck-in-die-zukunft",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1985</span>",
+        "title": "Zurück in die Zukunft",
+        "hideRatings": false,
+        "communityRatingsCount": 52964,
+        "averageCommunityRating": 76.0633,
+        "averageCriticsRating": 81.4138
+      },
+      {
+        "id": "4634",
+        "path": "/movies/der-unsichtbare-dritte",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1959</span>",
+        "title": "Der unsichtbare Dritte",
+        "hideRatings": false,
+        "communityRatingsCount": 8331,
+        "averageCommunityRating": 76.9043,
+        "averageCriticsRating": 84.6341
+      },
+      {
+        "id": "4977",
+        "path": "/movies/oldboy-3",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2003</span>",
+        "title": "Oldboy",
+        "hideRatings": false,
+        "communityRatingsCount": 23499,
+        "averageCommunityRating": 78.2563,
+        "averageCriticsRating": 81.3679
+      },
+      {
+        "id": "60790",
+        "path": "/movies/django-unchained",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">2012</span>",
+        "title": "Django Unchained",
+        "hideRatings": false,
+        "communityRatingsCount": 45877,
+        "averageCommunityRating": 83.9514,
+        "averageCriticsRating": 75.819
+      },
+      {
+        "id": "253",
+        "path": "/movies/full-metal-jacket",
+        "type": "Movie",
+        "metaShort": "<span itemprop=\"copyrightYear\">1987</span>",
+        "title": "Full Metal Jacket",
+        "hideRatings": false,
+        "communityRatingsCount": 36834,
+        "averageCommunityRating": 78.0343,
+        "averageCriticsRating": 80.6818
+      }
+    ]
+  }
+}

@@ -16,9 +16,9 @@ class AP06Tests(unittest.TestCase):
   selected=filter_rows(rows,{'year':{'2005'},'rated_month':{'10'},'genres':{'Abenteuerfilm'}},'or',{'Thriller'})
   self.assertEqual(selection_caption(selected),'Aktuelle Auswahl: 1 Film · 0 Serien · 1 Titel · Ø Note –')
   self.assertEqual(len(HELP_STEPS),5)
-  for topic in ['private','Browseradapter','vollständig','ODER','UND','Doppelklick','CSV','Excel','Sicherung','Mehrdeutigkeit','Appdaten','Datenschutz']:
+  for topic in ['private','HTTPS','vollständig','ODER','UND','Doppelklick','CSV','Excel','Sicherung','Mehrdeutigkeit','Appdaten','Datenschutz']:
    # Datenschutz is described by the concrete local-data section and no-transfer notice.
-   if topic=='Datenschutz':self.assertIn('überträgt keine Daten',QUICK_HELP)
-   else:self.assertIn(topic,QUICK_HELP)
+   if topic=='Datenschutz':self.assertIn('überträgt nichts automatisch an KI-Dienste',QUICK_HELP)
+   else:self.assertIn(topic.casefold(),QUICK_HELP.casefold())
 
 if __name__=='__main__':unittest.main()
