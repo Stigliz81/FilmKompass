@@ -36,3 +36,5 @@ Windows 10/11 x64. Hauptfunktionen und korrigiertes Taskleistensymbol wurden vom
 [Start und Sicherung](docs/V1.1_START.md) · [Fanart-Hinweise](docs/FANART.md) · [Datenschutz](docs/DATENSCHUTZ.md) · [MIT-Lizenz](LICENSE) · [Fremdlizenzen](THIRD_PARTY_NOTICES.md)
 
 Unabhängiges Projekt, nicht offiziell mit Moviepilot verbunden. Copyright (c) 2026 Stigliz81. Projektunterstützung ist freiwillig; bestehende Zahlungswege stehen auf der Webseite.
+
+[Veröffentlichungsbericht AP16.09 mit Prüfsummen und Prüfgrenzen](docs/AP16.09_FINAL_RELEASE.md) · [Arbeitspaketübersicht](docs/ARBEITSPAKETE.md)
