@@ -1,6 +1,6 @@
 # FilmKompass 1.1 – aktueller Kompatibilitätsstand
 
-Windows 10/11 x64: Hauptfunktionen und korrigiertes Taskleistensymbol wurden vom Nutzer praktisch bestätigt. Der finale AP16.09-Build wurde zusätzlich als entpackte EXE unter Windows 11 mit isolierten Testdaten geprüft. Kein erneuter Windows-10-Test des finalen Pakets. Details: [AP16.09](AP16.09_FINAL_RELEASE.md).
+Windows 10/11 x64: Hauptfunktionen und korrigiertes Taskleistensymbol wurden vom Nutzer praktisch bestätigt. Der vorherige AP16.09-Kandidat wurde als entpackte EXE unter Windows 11 mit isolierten Testdaten nativ geprüft. Der spätere Kurzpfad-Korrekturbuild startete erfolgreich; die erneute Fenstererfassung scheiterte an der Computersteuerung. Kein erneuter Windows-10-Test des finalen Pakets. Details: [AP16.09](AP16.09_FINAL_RELEASE.md).
 
 Die folgende Paketuntersuchung ist historische Dokumentation von 1.0, keine Messung des neuen Pakets.
 
