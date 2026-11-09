@@ -9,3 +9,5 @@
 122 finale Regressionstests bestanden; vier CI-Umgebungen erfolgreich. Webseite, öffentliche Downloads und Versionsdatei geprüft. Die offenen nativen/Live-Prüfungen sind im Abschlussbericht ausdrücklich getrennt aufgeführt.
 
 - AP16.10.2: **Freigegebene Website veröffentlicht**, Commit 2e650ed, bestehender Pages-Workflow erfolgreich. [Abschluss](AP16.10.2_ABSCHLUSS.md), [manuelle Google-Prüfung](GOOGLE_INDEXIERUNG.md). Vier neue Screenshots und öffentliche Ziele geprüft; Windows-Release v1.1.1 unverändert. Authentifizierter Search-Console-Status nicht auslesbar.
+
+- AP16.12 FINAL: **FilmKompass 1.1 / v1.1.2 veröffentlicht**. [Abschluss mit Hashes und Onlineprüfung](AP16.12_ABSCHLUSS.md). Unveränderten abgenommenen Kandidaten kopiert, keinen neuen Build erstellt. Kurzer Sicherheitsabschnitt, IMPREGO-Impressum und Headerlink öffentlich. Releaseassets bytegenau geprüft, Pages und vier CI-Jobs erfolgreich. VirusTotal mangels Key offen; kein neuer Norton-Scan.
