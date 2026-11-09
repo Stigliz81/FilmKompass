@@ -473,19 +473,24 @@ class Manager(tk.Tk):
         self.progress_bar=ttk.Progressbar(self.progress_content,mode="indeterminate")
         self.progress_bar.pack(fill="x")
         self.cover_main_frame=ttk.Frame(self,padding=(22,3))
-        content=ttk.Frame(self.cover_main_frame);content.pack(anchor='w');content.pack_propagate(False)
+        content=ttk.Frame(self.cover_main_frame);content.pack(anchor='w');content.grid_propagate(False)
+        content.columnconfigure(0,weight=1)
         self.cover_main_text=tk.StringVar(value='')
-        cover_label=ttk.Label(content,textvariable=self.cover_main_text,style='Accent.TLabel');cover_label.pack(anchor='w')
+        cover_label=ttk.Label(content,textvariable=self.cover_main_text,style='Accent.TLabel')
+        cover_label.grid(row=0,column=0,columnspan=2,sticky='w',pady=(0,4))
         self.cover_main_action=ttk.Button(content,text='Pausieren',command=self.covers.pause_batch)
-        self.cover_main_action.pack(side='right',padx=(8,0))
+        self.cover_main_action.grid(row=1,column=1,padx=(8,0))
         self.cover_main_bar=ttk.Progressbar(content,maximum=100,variable=self.covers.progress_value)
-        self.cover_main_bar.pack(fill='x')
-        def fit_cover(event):
+        self.cover_main_bar.grid(row=1,column=0,sticky='ew')
+        def fit_cover(event=None):
             factor=float(self.tk.call('tk','scaling'))/(96/72)
-            width=max(120,min(event.width-44,round(800*factor)))
-            content.configure(width=width,height=max(40,round(40*factor)))
+            available=event.width if event else self.cover_main_frame.winfo_width()
+            width=max(120,min(available-44,round(800*factor)))
             cover_label.configure(wraplength=max(100,width-self.cover_main_action.winfo_reqwidth()-20))
+            height=cover_label.winfo_reqheight()+max(self.cover_main_action.winfo_reqheight(),self.cover_main_bar.winfo_reqheight())+8
+            content.configure(width=width,height=height)
         self.cover_main_frame.bind('<Configure>',fit_cover,add='+')
+        cover_label.bind('<Configure>',lambda e:fit_cover(),add='+')
         self._poll_job=self.after(250,self._poll_export)
         self.tabs.bind('<<NotebookTabChanged>>',self._sync_cover_progress,add='+')
 
@@ -867,8 +872,8 @@ class Manager(tk.Tk):
         if key=='genres':
             def apply_genres(wanted,excluded,mode):
                 self.filters['genres']=wanted;self.excluded_genres=excluded-wanted;self.genre_mode=mode;self.refresh_list()
-            return GenreSelect(self,values,self.filters[key],self.excluded_genres,self.genre_mode,apply_genres,COLORS)
-        return MultiSelect(self,FILTER_LABELS[key],values,self.filters[key],apply,COLORS)
+            return GenreSelect(self,values,self.filters[key],self.excluded_genres,self.genre_mode,apply_genres,COLORS,work_area=monitor_work_area)
+        return MultiSelect(self,FILTER_LABELS[key],values,self.filters[key],apply,COLORS,work_area=monitor_work_area)
 
     def clear_filters(self):
         self.genre_mode="or";self.excluded_genres=set()

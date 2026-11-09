@@ -1,6 +1,6 @@
 # FilmKompass – Projektanweisungen
 
-Aktueller öffentlicher Stand: **1.1 / AP16.09**, Build 2. Die AP-Verweise unten dokumentieren ihre damaligen Grenzen. Maßgeblich sind der öffentliche Abschluss und die ausdrückliche aktuelle Beauftragung. Coverautomatik ist opt-in; persönlicher Fanart-Key genügt allein. Keine echten Schlüssel verteilen.
+Aktueller öffentlicher Stand: **1.1 / AP16.12 FINAL**, Build 2. Die AP-Verweise unten dokumentieren ihre damaligen Grenzen. Maßgeblich sind der öffentliche Abschluss und die ausdrückliche aktuelle Beauftragung. Coverautomatik ist opt-in; persönlicher Fanart-Key genügt allein. Keine echten Schlüssel verteilen.
 
 # FilmKompass
 

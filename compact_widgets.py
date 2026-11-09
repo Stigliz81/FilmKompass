@@ -83,17 +83,54 @@ class HeadingTip:
         if self.job:self.tree.after_cancel(self.job);self.job=None
         if self.window:self.window.destroy();self.window=None
 
+def fit_filter_dialog(window, parent, body, area, preferred, work_area=None):
+    """Reserve fixed controls and a scrollable list, within the current monitor."""
+    window.update_idletasks()
+    left,top,right,bottom = (work_area(parent) if work_area else
+        (0,0,parent.winfo_screenwidth(),parent.winfo_screenheight()))
+    available_w=max(1,right-left-24)
+    available_h=max(1,bottom-top-64)  # includes native title bar and borders
+    def lists(widget):
+        for child in widget.winfo_children():
+            if isinstance(child,tk.Listbox):yield child
+            else:yield from lists(child)
+    fixed_h=body.winfo_reqheight()-min(box.winfo_reqheight() for box in lists(area))
+    if fixed_h+80>available_h:
+        # The genre summary already has its own scrollbar: give the value lists room.
+        def compact(widget):
+            for child in widget.winfo_children():
+                if isinstance(child,tk.Text):child.configure(height=1)
+                elif isinstance(child,ttk.Label) and child.cget('wraplength'):
+                    child.configure(wraplength=max(200,available_w-32))
+                compact(child)
+        compact(body)
+        window.update_idletasks()
+        fixed_h=body.winfo_reqheight()-min(box.winfo_reqheight() for box in lists(area))
+    minimum_h=min(available_h,max(220,fixed_h+80))
+    minimum_w=min(available_w,max(320,body.winfo_reqwidth()))
+    width=min(available_w,max(preferred[0],minimum_w))
+    height=min(available_h,max(preferred[1],minimum_h))
+    x=max(left+12,min(right-width-12,parent.winfo_rootx()+(parent.winfo_width()-width)//2))
+    y=max(top+12,min(bottom-height-52,parent.winfo_rooty()+(parent.winfo_height()-height)//2))
+    window.minsize(minimum_w,minimum_h)
+    window.maxsize(available_w,available_h)
+    # Explicit + followed by a signed coordinate also supports monitors left of primary.
+    window.geometry(f'{width}x{height}+{x}+{y}')
+    window.deiconify()
+
+
 class MultiSelect(tk.Toplevel):
-    def __init__(self,parent,label,values,selected,callback,colors):
+    def __init__(self,parent,label,values,selected,callback,colors,work_area=None):
         super().__init__(parent)
         self.title(label+' auswählen'); self.transient(parent)
-        self.configure(bg=colors['bg']); self.geometry('370x450'); self.minsize(320,330)
+        self.withdraw(); self.configure(bg=colors['bg'])
         self.selected=set(selected); self.values=values; self.shown=[]
         body=ttk.Frame(self,padding=16); body.pack(fill='both',expand=True)
         ttk.Label(body,text=label+' · Mehrfachauswahl',font=('Segoe UI Semibold',12)).pack(anchor='w',pady=(0,8))
         search=tk.StringVar()
         entry=ttk.Entry(body,textvariable=search); entry.pack(fill='x')
         ttk.Label(body,text='Werte anklicken zum An-/Abwählen',style='Muted.TLabel').pack(anchor='w',pady=5)
+        tools=ttk.Frame(body); tools.pack(side='bottom',fill='x',pady=(12,0))
         area=ttk.Frame(body); area.pack(fill='both',expand=True)
         self.listbox=tk.Listbox(area,selectmode='multiple',exportselection=False,bg=colors['field'],fg=colors['ink'],selectbackground='#24564f',selectforeground=colors['ink'],disabledforeground=colors['muted'],highlightbackground=colors['border'],highlightcolor=colors['accent'],relief='flat',font=('Segoe UI',11),activestyle='none')
         self.listbox.pack(side='left',fill='both',expand=True)
@@ -107,11 +144,11 @@ class MultiSelect(tk.Toplevel):
                 self.listbox.insert('end',str(v).replace('.',',') if isinstance(v,float) else str(v))
                 if v in self.selected: self.listbox.selection_set(i)
         search.trace_add('write',refill); refill()
-        tools=ttk.Frame(body); tools.pack(fill='x',pady=(12,0))
         def reset(): self.selected.clear(); search.set(''); refill()
         def apply(): self.remember(); callback(set(self.selected)); self.destroy()
         ttk.Button(tools,text='Zurücksetzen',command=reset).pack(side='left')
         ttk.Button(tools,text='Übernehmen',command=apply,style='Accent.TButton').pack(side='right')
+        fit_filter_dialog(self,parent,body,area,(370,450),work_area)
         self.grab_set(); entry.focus_set()
 
     def remember(self):
@@ -120,13 +157,10 @@ class MultiSelect(tk.Toplevel):
 
 class GenreSelect(tk.Toplevel):
     """Two searchable selections; the latest explicit choice resolves conflicts."""
-    def __init__(self,parent,values,wanted,excluded,mode,callback,colors):
+    def __init__(self,parent,values,wanted,excluded,mode,callback,colors,work_area=None):
         super().__init__(parent)
         self.title('Moviepilot Genre auswählen');self.transient(parent)
-        self.configure(bg=colors['bg']);self.minsize(560,460)
-        x=max(0,parent.winfo_rootx()+(parent.winfo_width()-650)//2)
-        y=max(0,parent.winfo_rooty()+(parent.winfo_height()-560)//2)
-        self.geometry(f'650x560+{x}+{y}')
+        self.withdraw();self.configure(bg=colors['bg'])
         self.selected=[set(wanted),set(excluded)-set(wanted)];self.shown=[[],[]];self.boxes=[];self.searches=[];self.anchors=[None,None]
         self.mode=tk.StringVar(value=mode if mode in ('or','and') else 'or')
         body=ttk.Frame(self,padding=16);body.pack(fill='both',expand=True)
@@ -168,7 +202,9 @@ class GenreSelect(tk.Toplevel):
         tools=ttk.Frame(footer);tools.pack(fill='x',pady=(8,0))
         ttk.Button(tools,text='Zurücksetzen',command=self.reset).pack(side='left')
         ttk.Button(tools,text='Übernehmen',style='Accent.TButton',command=lambda:(callback(set(self.selected[0]),set(self.selected[1]),self.mode.get()),self.destroy())).pack(side='right')
-        self.refill(0);self.refill(1);self.summary();self.grab_set()
+        self.refill(0);self.refill(1);self.summary()
+        fit_filter_dialog(self,parent,body,area,(650,560),work_area)
+        self.grab_set()
 
     def refill(self,side):
         self.anchors[side]=None
